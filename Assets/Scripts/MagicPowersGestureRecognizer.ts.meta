@@ -1,0 +1,136 @@
+- !<AssetImportMetadata/dd721794-83cd-4de2-bc57-c096ac9edf50>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 1fb5af74-e243-42c9-8f40-53d4937b4ebf
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 1fb5af74-e243-42c9-8f40-53d4937b4ebf
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> 6a2322bd-0ec7-4720-b76f-0b3b272a3a73
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/6a2322bd-0ec7-4720-b76f-0b3b272a3a73>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  VersionPrerelease: ""
+  UpdateOrder: 0
+  ComponentUid: 74553879-e8a6-4415-9b69-6adc775c7a7d
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    circleCooldownSec: false
+    circleMaxRadiusCm: false
+    circleMinRadiusCm: false
+    circleWindowSec: false
+    editorMockHands: false
+    fingerCurlRatio: false
+    fingerExtendRatio: false
+    fistThreshold: false
+    hysteresis: false
+    logGestures: false
+    minHoldSec: false
+    mockCycleSec: false
+    mockDistanceCm: false
+    openThreshold: false
+    palmUpDot: false
+    palmsFacingDot: false
+    palmsFacingMaxDistCm: false
+    pointCooldownSec: false
+    pushCooldownSec: false
+    pushSpeedCmPerSec: false
+    spreadRateCmPerSec: false
+    trackingFadeInSec: false
+    trackingFadeOutSec: false
+    velocitySmoothing: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - openThreshold: 0.700000
+      fistThreshold: 0.300000
+      hysteresis: 0.120000
+      minHoldSec: 0.080000
+      pushSpeedCmPerSec: !<float> 110.000000
+      pushCooldownSec: 0.450000
+      pointCooldownSec: 0.500000
+      palmUpDot: 0.720000
+      palmsFacingDot: -0.550000
+      palmsFacingMaxDistCm: !<float> 45.000000
+      spreadRateCmPerSec: !<float> 70.000000
+      fingerCurlRatio: 1.200000
+      fingerExtendRatio: 1.850000
+      circleMinRadiusCm: !<float> 4.000000
+      circleMaxRadiusCm: !<float> 32.000000
+      circleWindowSec: 2.200000
+      circleCooldownSec: 1.200000
+      trackingFadeOutSec: 0.300000
+      trackingFadeInSec: 0.150000
+      velocitySmoothing: !<float> 14.000000
+      editorMockHands: true
+      mockDistanceCm: !<float> 55.000000
+      mockCycleSec: !<float> 9.000000
+      logGestures: false
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">MagicPowersGestureRecognizer – hand poses → gesture events</span>"}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Gesture thresholds</span>"}'
+    - '// @ui {"widget":"group_start", "label":"Gesture thresholds"}'
+    - '// @input float openThreshold = 0.7 {"hint":"Openness (0 fist … 1 open) above which a hand counts as an open palm", "widget":"slider", "min":0.4, "max":0.95, "step":0.01}'
+    - '// @input float fistThreshold = 0.3 {"hint":"Openness below which a hand counts as a fist", "widget":"slider", "min":0.05, "max":0.6, "step":0.01}'
+    - '// @input float hysteresis = 0.12 {"hint":"Hysteresis band added/subtracted before an open/fist state is released", "widget":"slider", "min":0, "max":0.3, "step":0.01}'
+    - '// @input float minHoldSec = 0.08 {"hint":"Seconds a pose must be held before the gesture fires (filters tracking jitter)", "widget":"slider", "min":0, "max":0.4, "step":0.01}'
+    - '// @input float pushSpeedCmPerSec = 110 {"hint":"Palm speed along the palm normal (cm/s) that counts as a push / throw", "widget":"slider", "min":40, "max":300, "step":5}'
+    - '// @input float pushCooldownSec = 0.45 {"hint":"Seconds between two push gestures from the same hand", "widget":"slider", "min":0.1, "max":2, "step":0.05}'
+    - '// @input float pointCooldownSec = 0.5 {"hint":"Seconds between two point (bolt) gestures from the same hand", "widget":"slider", "min":0.1, "max":2, "step":0.05}'
+    - '// @input float palmUpDot = 0.72 {"hint":"Dot(palm normal, world up) above which the palm counts as facing the sky", "widget":"slider", "min":0.4, "max":0.95, "step":0.01}'
+    - '// @input float palmsFacingDot = -0.55 {"hint":"Dot(left normal, right normal) below which the palms face each other (−1 = perfectly facing)", "widget":"slider", "min":-0.95, "max":0, "step":0.01}'
+    - '// @input float palmsFacingMaxDistCm = 45 {"hint":"Maximum palm-to-palm distance (cm) for the palms-facing state", "widget":"slider", "min":15, "max":80, "step":1}'
+    - '// @input float spreadRateCmPerSec = 70 {"hint":"Inter-palm distance change (cm/s) that fires HandsSpread / HandsTogether", "widget":"slider", "min":20, "max":200, "step":5}'
+    - '// @input float fingerCurlRatio = 1.2 {"hint":"Finger tip/wrist ÷ knuckle/wrist ratio at which a finger counts as fully curled", "widget":"slider", "min":0.8, "max":1.6, "step":0.01}'
+    - '// @input float fingerExtendRatio = 1.85 {"hint":"Finger tip/wrist ÷ knuckle/wrist ratio at which a finger counts as fully extended", "widget":"slider", "min":1.4, "max":2.4, "step":0.01}'
+    - '// @ui {"widget":"group_end"}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Circle trace (Portal)</span>"}'
+    - '// @ui {"widget":"group_start", "label":"Circle trace"}'
+    - '// @input float circleMinRadiusCm = 4 {"hint":"Smallest circle radius (cm) the pointing index finger can trace to open a portal", "widget":"slider", "min":2, "max":15, "step":0.5}'
+    - '// @input float circleMaxRadiusCm = 32 {"hint":"Largest circle radius (cm) accepted for a traced circle", "widget":"slider", "min":10, "max":60, "step":1}'
+    - '// @input float circleWindowSec = 2.2 {"hint":"Seconds of fingertip history examined for a closed circle (slower circles need a longer window)", "widget":"slider", "min":0.8, "max":4, "step":0.1}'
+    - '// @input float circleCooldownSec = 1.2 {"hint":"Seconds between two circle-trace gestures from the same hand", "widget":"slider", "min":0.2, "max":3, "step":0.1}'
+    - '// @ui {"widget":"group_end"}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Tracking</span>"}'
+    - '// @ui {"widget":"group_start", "label":"Tracking"}'
+    - '// @input float trackingFadeOutSec = 0.3 {"hint":"Seconds effects take to fade out after a hand is lost (state is kept, effects resume on re-acquire)", "widget":"slider", "min":0.05, "max":1.5, "step":0.05}'
+    - '// @input float trackingFadeInSec = 0.15 {"hint":"Seconds effects take to fade back in after a hand is re-acquired", "widget":"slider", "min":0, "max":1, "step":0.05}'
+    - '// @input float velocitySmoothing = 14 {"hint":"Velocity smoothing rate (per second); higher = snappier, lower = steadier", "widget":"slider", "min":2, "max":40, "step":1}'
+    - '// @ui {"widget":"group_end"}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Editor mock</span>"}'
+    - '// @ui {"widget":"group_start", "label":"Editor mock"}'
+    - '// @input bool editorMockHands = true {"hint":"In Lens Studio (no headset) synthesise two hands in front of the camera that cycle through the gestures so every power can be previewed"}'
+    - '// @input float mockDistanceCm = 55 {"hint":"Distance in front of the camera (cm) where the mock hands float", "widget":"slider", "min":30, "max":90, "step":1}'
+    - '// @input float mockCycleSec = 9 {"hint":"Length of one mock gesture cycle in seconds", "widget":"slider", "min":4, "max":20, "step":0.5}'
+    - '// @ui {"widget":"group_end"}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Debug</span>"}'
+    - '// @ui {"widget":"group_start", "label":"Debug"}'
+    - '// @input bool logGestures {"hint":"Print every gesture event to the console"}'
+    - '// @ui {"widget":"group_end"}'

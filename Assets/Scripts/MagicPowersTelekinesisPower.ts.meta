@@ -1,0 +1,113 @@
+- !<AssetImportMetadata/f9c38464-cd0f-4cd3-9718-42381722cd4a>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 514bc0bd-18eb-4cb7-a742-e4b3b8daaa29
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 514bc0bd-18eb-4cb7-a742-e4b3b8daaa29
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> 28b559a7-85ca-481d-8683-46a2a5b1f2fa
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/28b559a7-85ca-481d-8683-46a2a5b1f2fa>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  VersionPrerelease: ""
+  UpdateOrder: 0
+  ComponentUid: ca953bda-cf4d-489f-afb3-63ede064126a
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    aimConeDeg: false
+    colorAura: false
+    colorCore: false
+    colorCrystal: false
+    colorOrb: false
+    flingSpeedMax: false
+    flingSpeedMin: false
+    grabDwellSec: false
+    gravity: false
+    humVolume: false
+    objectCount: false
+    objectRadiusCm: false
+    pullGain: false
+    reachCm: false
+    restitution: false
+    spawnArcDeg: false
+    spawnDistMaxCm: false
+    spawnDistMinCm: false
+    spinGain: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - objectCount: !<float> 5.000000
+      spawnDistMinCm: !<float> 100.000000
+      spawnDistMaxCm: !<float> 160.000000
+      spawnArcDeg: !<float> 45.000000
+      objectRadiusCm: 4.500000
+      aimConeDeg: !<float> 28.000000
+      grabDwellSec: 0.350000
+      reachCm: !<float> 350.000000
+      pullGain: !<float> 3.000000
+      spinGain: 2.500000
+      flingSpeedMin: !<float> 260.000000
+      flingSpeedMax: !<float> 820.000000
+      gravity: !<float> 620.000000
+      restitution: 0.420000
+      colorCore: !<Vec4> {x: 0.750000, y: 0.950000, z: 1.000000, w: 1.000000}
+      colorAura: !<Vec4> {x: 0.350000, y: 1.000000, z: 0.650000, w: 1.000000}
+      colorCrystal: !<Vec4> {x: 0.550000, y: 0.350000, z: 1.000000, w: 1.000000}
+      colorOrb: !<Vec4> {x: 1.000000, y: 0.750000, z: 0.350000, w: 1.000000}
+      humVolume: 0.500000
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">MagicPowersTelekinesisPower – levitate, move, spin, attract and fling objects</span>"}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Objects</span>"}'
+    - '// @ui {"widget":"group_start", "label":"Objects"}'
+    - '// @input float objectCount = 5 {"hint":"Floating magical objects spawned in front of the user (crystals and orbs alternate)", "widget":"slider", "min":1, "max":8, "step":1}'
+    - '// @input float spawnDistMinCm = 100 {"hint":"Nearest spawn distance (cm) in front of the user", "widget":"slider", "min":60, "max":300, "step":5}'
+    - '// @input float spawnDistMaxCm = 160 {"hint":"Farthest spawn distance (cm) in front of the user", "widget":"slider", "min":60, "max":400, "step":5}'
+    - '// @input float spawnArcDeg = 45 {"hint":"Horizontal spread of the spawn arc (degrees, half-angle)", "widget":"slider", "min":10, "max":80, "step":1}'
+    - '// @input float objectRadiusCm = 4.5 {"hint":"Object radius (cm)", "widget":"slider", "min":2, "max":10, "step":0.5}'
+    - '// @ui {"widget":"group_end"}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Control</span>"}'
+    - '// @ui {"widget":"group_start", "label":"Control"}'
+    - '// @input float aimConeDeg = 28 {"hint":"Half-angle (degrees) of the palm cone that can target an object", "widget":"slider", "min":8, "max":45, "step":1}'
+    - '// @input float grabDwellSec = 0.35 {"hint":"Seconds the palm must stay aimed at an object before it levitates", "widget":"slider", "min":0.05, "max":1.5, "step":0.05}'
+    - '// @input float reachCm = 350 {"hint":"Farthest object (cm) a palm can reach", "widget":"slider", "min":50, "max":600, "step":10}'
+    - "// @input float pullGain = 3 {\"hint\":\"How strongly the hand's motion towards/away from the body reels the object in/out (× hand displacement)\", \"widget\":\"slider\", \"min\":0, \"max\":8, \"step\":0.25}"
+    - '// @input float spinGain = 2.5 {"hint":"How much wrist rotation spins the held object (× wrist angular speed)", "widget":"slider", "min":0, "max":6, "step":0.25}'
+    - '// @input float flingSpeedMin = 260 {"hint":"Object speed (cm/s) at the slowest push that flings it", "widget":"slider", "min":100, "max":800, "step":10}'
+    - '// @input float flingSpeedMax = 820 {"hint":"Object speed (cm/s) at a fast push", "widget":"slider", "min":200, "max":1500, "step":10}'
+    - '// @input float gravity = 620 {"hint":"Downward acceleration on flung objects (cm/s²); 981 = real gravity, lower feels magical", "widget":"slider", "min":0, "max":1200, "step":10}'
+    - '// @input float restitution = 0.42 {"hint":"Bounciness on surface hits (0 = thud, 1 = perfectly elastic)", "widget":"slider", "min":0, "max":1, "step":0.05}'
+    - '// @ui {"widget":"group_end"}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Look</span>"}'
+    - '// @ui {"widget":"group_start", "label":"Look"}'
+    - '// @input vec4 colorCore = "{0.75, 0.95, 1.0, 1.0}" {"hint":"Crystal tip / aura core colour", "widget":"color"}'
+    - '// @input vec4 colorAura = "{0.35, 1.0, 0.65, 1.0}" {"hint":"Telekinetic aura colour (tether, hold ring)", "widget":"color"}'
+    - '// @input vec4 colorCrystal = "{0.55, 0.35, 1.0, 1.0}" {"hint":"Crystal body colour", "widget":"color"}'
+    - '// @input vec4 colorOrb = "{1.0, 0.75, 0.35, 1.0}" {"hint":"Orb colour", "widget":"color"}'
+    - '// @input float humVolume = 0.5 {"hint":"Volume of the telekinetic hum while an object is held", "widget":"slider", "min":0, "max":1, "step":0.05}'
+    - '// @ui {"widget":"group_end"}'

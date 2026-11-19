@@ -1,0 +1,18 @@
+# BEGIN Lens Studio managed Agents-Docs block
+.mcp.json
+.cursor/mcp.json
+.vscode/mcp.json
+.codex/config.toml
+.claude/settings.local.json
+ls-live-instance.json
+ls-live-instance.json.tmp
+# END Lens Studio managed Agents-Docs block
+
+# Private signing key - never commit
+*.pem
+
+# Agent tooling snapshots and scratch (regenerated from the live scene)
+.virtual-scene.json
+.virtual-scene.runtime.json
+.icon_tmp/
+.clad/

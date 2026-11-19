@@ -1,0 +1,101 @@
+- !<AssetImportMetadata/0b06cdb6-5e6c-4d42-8a32-e358da626275>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> cf05c07f-bee1-4b56-b2c8-e46232a7f193
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> cf05c07f-bee1-4b56-b2c8-e46232a7f193
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> e724cf15-673c-4761-8fe9-edfa40aafd8c
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/e724cf15-673c-4761-8fe9-edfa40aafd8c>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  VersionPrerelease: ""
+  UpdateOrder: 0
+  ComponentUid: 577fc376-f97f-403d-a360-532c58022de2
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    arcMaxDistanceCm: false
+    arcSegments: false
+    blastBolts: false
+    blastChargeSec: false
+    boltDurationSec: false
+    boltRangeCm: false
+    colorCore: false
+    colorGlow: false
+    coreWidthCm: false
+    crackleVolume: false
+    fingertipSparks: false
+    flickerHz: false
+    glowWidthCm: false
+    jitterFraction: false
+    maxArcs: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - arcMaxDistanceCm: !<float> 65.000000
+      maxArcs: !<float> 5.000000
+      arcSegments: !<float> 14.000000
+      jitterFraction: 0.160000
+      flickerHz: !<float> 24.000000
+      coreWidthCm: 0.600000
+      glowWidthCm: 2.400000
+      boltRangeCm: !<float> 500.000000
+      boltDurationSec: 0.180000
+      blastChargeSec: 1.500000
+      blastBolts: !<float> 10.000000
+      colorCore: !<Vec4> {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+      colorGlow: !<Vec4> {x: 0.400000, y: 0.850000, z: 1.000000, w: 1.000000}
+      fingertipSparks: true
+      crackleVolume: 0.600000
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">MagicPowersLightningPower – arcs, sparks and bolts</span>"}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Arcs</span>"}'
+    - '// @ui {"widget":"group_start", "label":"Arcs"}'
+    - '// @input float arcMaxDistanceCm = 65 {"hint":"Palm-to-palm distance (cm) above which the arcs snap and vanish", "widget":"slider", "min":20, "max":120, "step":1}'
+    - '// @input float maxArcs = 5 {"hint":"Maximum simultaneous arcs between the palms (closest distance)", "widget":"slider", "min":1, "max":8, "step":1}'
+    - '// @input float arcSegments = 14 {"hint":"Segments per arc — more = finer jaggedness, more vertices", "widget":"slider", "min":6, "max":24, "step":1}'
+    - '// @input float jitterFraction = 0.16 {"hint":"Jitter amplitude as a fraction of the arc length", "widget":"slider", "min":0.02, "max":0.4, "step":0.01}'
+    - '// @input float flickerHz = 24 {"hint":"How many times per second each arc re-rolls its shape", "widget":"slider", "min":4, "max":60, "step":1}'
+    - '// @input float coreWidthCm = 0.6 {"hint":"Width (cm) of the bright white core ribbon", "widget":"slider", "min":0.2, "max":2, "step":0.05}'
+    - '// @input float glowWidthCm = 3.2 {"hint":"Width (cm) of the soft coloured glow ribbon", "widget":"slider", "min":0.5, "max":6, "step":0.1}'
+    - '// @ui {"widget":"group_end"}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Bolt &amp; blast</span>"}'
+    - '// @ui {"widget":"group_start", "label":"Bolt & blast"}'
+    - '// @input float boltRangeCm = 500 {"hint":"How far (cm) a pointed bolt travels when nothing is hit", "widget":"slider", "min":100, "max":1500, "step":10}'
+    - '// @input float boltDurationSec = 0.18 {"hint":"Seconds a bolt stays visible", "widget":"slider", "min":0.05, "max":0.6, "step":0.01}'
+    - '// @input float blastChargeSec = 1.5 {"hint":"Seconds of two facing fists needed for a full blast charge", "widget":"slider", "min":0.3, "max":4, "step":0.1}'
+    - '// @input float blastBolts = 10 {"hint":"Number of radial bolts released by a full blast", "widget":"slider", "min":2, "max":16, "step":1}'
+    - '// @ui {"widget":"group_end"}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Look</span>"}'
+    - '// @ui {"widget":"group_start", "label":"Look"}'
+    - '// @input vec4 colorCore = "{1.0, 1.0, 1.0, 1.0}" {"hint":"Arc core colour", "widget":"color"}'
+    - '// @input vec4 colorGlow = "{0.4, 0.85, 1.0, 1.0}" {"hint":"Arc glow / spark colour", "widget":"color"}'
+    - '// @input bool fingertipSparks = true {"hint":"Show tiny arcs between the fingertips of an open hand"}'
+    - '// @input float crackleVolume = 0.6 {"hint":"Volume of the crackle loop between the hands", "widget":"slider", "min":0, "max":1, "step":0.05}'
+    - '// @ui {"widget":"group_end"}'

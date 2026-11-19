@@ -1,0 +1,97 @@
+- !<AssetImportMetadata/c9158f1b-e6d1-45b0-883c-9e3bd68d0c56>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 39386666-dad8-4efa-aeb7-56de480029d5
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 39386666-dad8-4efa-aeb7-56de480029d5
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> 3c948db7-e95b-4a6c-893b-83dee81f5c10
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/3c948db7-e95b-4a6c-893b-83dee81f5c10>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  VersionPrerelease: ""
+  UpdateOrder: 0
+  ComponentUid: 53411fa6-8f98-4da3-8be3-417fc6af3162
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    chargeTimeSec: false
+    colorCore: false
+    colorEmber: false
+    colorFlame: false
+    emberRate: false
+    fastOpenRate: false
+    fireLoopVolume: false
+    flameHeightCm: false
+    gazeAssist: false
+    launchSpeedMax: false
+    launchSpeedMin: false
+    maxProjectiles: false
+    maxRangeCm: false
+    minChargeToLaunch: false
+    projectileGravity: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - chargeTimeSec: 1.400000
+      minChargeToLaunch: 0.150000
+      fastOpenRate: 3.500000
+      launchSpeedMin: !<float> 320.000000
+      launchSpeedMax: !<float> 720.000000
+      projectileGravity: !<float> 45.000000
+      maxRangeCm: !<float> 900.000000
+      gazeAssist: 0.350000
+      maxProjectiles: !<float> 3.000000
+      flameHeightCm: !<float> 11.000000
+      emberRate: !<float> 40.000000
+      colorCore: !<Vec4> {x: 1.000000, y: 0.950000, z: 0.650000, w: 1.000000}
+      colorFlame: !<Vec4> {x: 1.000000, y: 0.450000, z: 0.080000, w: 1.000000}
+      colorEmber: !<Vec4> {x: 1.000000, y: 0.250000, z: 0.040000, w: 1.000000}
+      fireLoopVolume: 0.550000
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">MagicPowersFireballPower – summon, charge and throw fire</span>"}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Casting</span>"}'
+    - '// @ui {"widget":"group_start", "label":"Casting"}'
+    - '// @input float chargeTimeSec = 1.4 {"hint":"Seconds of closed fist needed to reach a full charge", "widget":"slider", "min":0.3, "max":4, "step":0.1}'
+    - '// @input float minChargeToLaunch = 0.15 {"hint":"Minimum charge (0..1) required before an open/push launches a fireball; below this the charge fizzles", "widget":"slider", "min":0, "max":0.8, "step":0.05}'
+    - "// @input float fastOpenRate = 3.5 {\"hint\":\"Hand opening rate (1/s) that counts as a 'fast open' throw\", \"widget\":\"slider\", \"min\":1, \"max\":12, \"step\":0.25}"
+    - '// @input float launchSpeedMin = 320 {"hint":"Fireball speed (cm/s) at minimum charge", "widget":"slider", "min":100, "max":1200, "step":10}'
+    - '// @input float launchSpeedMax = 720 {"hint":"Fireball speed (cm/s) at full charge", "widget":"slider", "min":100, "max":1500, "step":10}'
+    - '// @input float projectileGravity = 45 {"hint":"Downward acceleration on fireballs (cm/s²); 0 = straight line", "widget":"slider", "min":0, "max":400, "step":5}'
+    - '// @input float maxRangeCm = 900 {"hint":"Distance (cm) after which an un-hit fireball bursts on its own", "widget":"slider", "min":100, "max":2000, "step":10}'
+    - '// @input float gazeAssist = 0.35 {"hint":"How much of the throw direction follows the gaze (0 = pure palm normal, 1 = pure gaze)", "widget":"slider", "min":0, "max":1, "step":0.05}'
+    - '// @input float maxProjectiles = 3 {"hint":"Maximum fireballs in flight at once", "widget":"slider", "min":1, "max":8, "step":1}'
+    - '// @ui {"widget":"group_end"}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Look</span>"}'
+    - '// @ui {"widget":"group_start", "label":"Look"}'
+    - '// @input float flameHeightCm = 11 {"hint":"Height of the palm flame (cm)", "widget":"slider", "min":4, "max":25, "step":0.5}'
+    - '// @input float emberRate = 40 {"hint":"Embers spawned per second per burning palm", "widget":"slider", "min":0, "max":120, "step":1}'
+    - '// @input vec4 colorCore = "{1.0, 0.95, 0.65, 1.0}" {"hint":"Hottest colour at the flame core / fireball centre", "widget":"color"}'
+    - '// @input vec4 colorFlame = "{1.0, 0.45, 0.08, 1.0}" {"hint":"Main flame colour", "widget":"color"}'
+    - '// @input vec4 colorEmber = "{1.0, 0.25, 0.04, 1.0}" {"hint":"Ember / outer glow colour", "widget":"color"}'
+    - '// @input float fireLoopVolume = 0.55 {"hint":"Volume of the crackling fire loop on each burning palm", "widget":"slider", "min":0, "max":1, "step":0.05}'
+    - '// @ui {"widget":"group_end"}'

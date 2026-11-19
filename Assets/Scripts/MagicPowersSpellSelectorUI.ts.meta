@@ -1,0 +1,66 @@
+- !<AssetImportMetadata/e768cd87-4476-4fa5-af01-e72810a9308a>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 7af795f8-2895-4989-b448-87622f5e0785
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 7af795f8-2895-4989-b448-87622f5e0785
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> 4a574e88-3fc4-4edd-aa83-faa6dbc2f5dd
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/4a574e88-3fc4-4edd-aa83-faa6dbc2f5dd>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  VersionPrerelease: ""
+  UpdateOrder: 0
+  ComponentUid: c7b625df-58c8-4d48-863e-3432690f5e7a
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    buttonSizeCm: false
+    captionColor: false
+    dimmedOpacity: false
+    gapCm: false
+    paddingCm: false
+    showCaption: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - buttonSizeCm: 3.600000
+      gapCm: 0.700000
+      paddingCm: 0.900000
+      captionColor: !<Vec4> {x: 1.000000, y: 0.900000, z: 0.600000, w: 1.000000}
+      dimmedOpacity: 0.350000
+      showCaption: true
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">MagicPowersSpellSelectorUI – palm-up spell selector</span>"}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Settings</span>"}'
+    - '// @ui {"widget":"group_start", "label":"Settings"}'
+    - '// @input float buttonSizeCm = 3 {"hint":"Size (cm) of each elemental symbol button", "widget":"slider", "min":2.5, "max":8, "step":0.1}'
+    - '// @input float gapCm = 0.5 {"hint":"Gap (cm) between the symbol buttons", "widget":"slider", "min":0, "max":3, "step":0.1}'
+    - '// @input float paddingCm = 0.7 {"hint":"Panel padding (cm) around the content", "widget":"slider", "min":0, "max":3, "step":0.1}'
+    - '// @input vec4 captionColor = "{1.0, 0.9, 0.6, 1.0}" {"hint":"Caption colour for the active power name", "widget":"color"}'
+    - '// @input float dimmedOpacity = 0.35 {"hint":"Opacity of symbols whose power is not available yet (greyed out)", "widget":"slider", "min":0.1, "max":1, "step":0.05}'
+    - '// @input bool showCaption = true {"hint":"Show the active power name above the symbols"}'
+    - '// @ui {"widget":"group_end"}'

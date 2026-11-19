@@ -1,0 +1,109 @@
+- !<AssetImportMetadata/9af09a0e-2b31-419f-b059-b96289e1c0c9>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 75b68d2c-dfc6-4f84-8dd9-bb53e3ee4312
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 75b68d2c-dfc6-4f84-8dd9-bb53e3ee4312
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> ec401c6e-a0a5-4ce5-ac80-225efe1ab8b1
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/ec401c6e-a0a5-4ce5-ac80-225efe1ab8b1>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  VersionPrerelease: ""
+  UpdateOrder: 0
+  ComponentUid: 7946d768-b1cc-4f5e-ac6b-45964a26d2d4
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    colorCore: false
+    colorDeep: false
+    colorIce: false
+    fastOpenRate: false
+    flakeCount: false
+    flakeHeightCm: false
+    gazeAssist: false
+    maxRangeCm: false
+    minSphereToShoot: false
+    shardCountMax: false
+    shardCountMin: false
+    shardGravity: false
+    shardSpeedMax: false
+    shardSpeedMin: false
+    shieldEnabled: false
+    shieldRadiusCm: false
+    shimmerVolume: false
+    sphereGrowSec: false
+    spreadDeg: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - sphereGrowSec: 1.200000
+      minSphereToShoot: 0.200000
+      fastOpenRate: 3.500000
+      shardSpeedMin: !<float> 450.000000
+      shardSpeedMax: !<float> 850.000000
+      shardCountMin: !<float> 4.000000
+      shardCountMax: !<float> 9.000000
+      spreadDeg: !<float> 7.000000
+      shardGravity: !<float> 25.000000
+      maxRangeCm: !<float> 900.000000
+      gazeAssist: 0.350000
+      shieldEnabled: true
+      flakeCount: !<float> 10.000000
+      flakeHeightCm: !<float> 9.000000
+      shieldRadiusCm: !<float> 13.000000
+      colorCore: !<Vec4> {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+      colorIce: !<Vec4> {x: 0.620000, y: 0.860000, z: 1.000000, w: 1.000000}
+      colorDeep: !<Vec4> {x: 0.320000, y: 0.580000, z: 1.000000, w: 1.000000}
+      shimmerVolume: 0.400000
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">MagicPowersIcePower – snowflakes, ice sphere, shards and a crystal shield</span>"}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Casting</span>"}'
+    - '// @ui {"widget":"group_start", "label":"Casting"}'
+    - '// @input float sphereGrowSec = 1.2 {"hint":"Seconds of closed fist needed to form a full ice sphere", "widget":"slider", "min":0.3, "max":4, "step":0.1}'
+    - '// @input float minSphereToShoot = 0.2 {"hint":"Minimum sphere formation (0..1) required before an open/push shoots shards; below this the sphere melts", "widget":"slider", "min":0, "max":0.8, "step":0.05}'
+    - "// @input float fastOpenRate = 3.5 {\"hint\":\"Hand opening rate (1/s) that counts as a 'fast open' shot\", \"widget\":\"slider\", \"min\":1, \"max\":12, \"step\":0.25}"
+    - '// @input float shardSpeedMin = 450 {"hint":"Shard speed (cm/s) for a barely formed sphere", "widget":"slider", "min":100, "max":1200, "step":10}'
+    - '// @input float shardSpeedMax = 850 {"hint":"Shard speed (cm/s) for a fully formed sphere", "widget":"slider", "min":100, "max":1500, "step":10}'
+    - '// @input float shardCountMin = 4 {"hint":"Shards in a volley from a barely formed sphere", "widget":"slider", "min":1, "max":12, "step":1}'
+    - '// @input float shardCountMax = 9 {"hint":"Shards in a volley from a fully formed sphere", "widget":"slider", "min":1, "max":16, "step":1}'
+    - '// @input float spreadDeg = 7 {"hint":"Volley spread (degrees, half-angle)", "widget":"slider", "min":0, "max":30, "step":0.5}'
+    - '// @input float shardGravity = 25 {"hint":"Downward acceleration on shards (cm/s²)", "widget":"slider", "min":0, "max":300, "step":5}'
+    - '// @input float maxRangeCm = 900 {"hint":"Distance (cm) after which an un-hit shard shatters on its own", "widget":"slider", "min":100, "max":2000, "step":10}'
+    - '// @input float gazeAssist = 0.35 {"hint":"How much of the shot direction follows the gaze (0 = pure palm normal, 1 = pure gaze)", "widget":"slider", "min":0, "max":1, "step":0.05}'
+    - '// @input bool shieldEnabled = true {"hint":"Show the crystal shield when an open palm faces away from the user"}'
+    - '// @ui {"widget":"group_end"}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Look</span>"}'
+    - '// @ui {"widget":"group_start", "label":"Look"}'
+    - '// @input float flakeCount = 10 {"hint":"Snowflakes + crystals floating above each open palm", "widget":"slider", "min":3, "max":16, "step":1}'
+    - '// @input float flakeHeightCm = 9 {"hint":"Height (cm) of the snowflake cloud above the palm", "widget":"slider", "min":3, "max":20, "step":0.5}'
+    - '// @input float shieldRadiusCm = 13 {"hint":"Radius (cm) of the hexagonal crystal shield", "widget":"slider", "min":6, "max":30, "step":0.5}'
+    - '// @input vec4 colorCore = "{1.0, 1.0, 1.0, 1.0}" {"hint":"Brightest colour: snowflake cores, sphere centre, shard tips", "widget":"color"}'
+    - '// @input vec4 colorIce = "{0.62, 0.86, 1.0, 1.0}" {"hint":"Main pale-blue ice colour", "widget":"color"}'
+    - '// @input vec4 colorDeep = "{0.32, 0.58, 1.0, 1.0}" {"hint":"Deep blue used for glows and the sphere body", "widget":"color"}'
+    - '// @input float shimmerVolume = 0.4 {"hint":"Volume of the icy shimmer loop over each open palm", "widget":"slider", "min":0, "max":1, "step":0.05}'
+    - '// @ui {"widget":"group_end"}'

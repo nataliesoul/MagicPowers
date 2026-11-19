@@ -1,0 +1,94 @@
+- !<AssetImportMetadata/72a0725b-117d-40cb-a8fb-eda20ce5cee0>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 547d6337-9d63-4321-9f8e-b9e9e2ed46eb
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 547d6337-9d63-4321-9f8e-b9e9e2ed46eb
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> af91acc9-7707-4247-a961-6fe20d7236d4
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/af91acc9-7707-4247-a961-6fe20d7236d4>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  VersionPrerelease: ""
+  UpdateOrder: 0
+  ComponentUid: 0b5c7c3f-980f-46d0-b2ec-eaa9d399fcb1
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    closeDistanceCm: false
+    closeSec: false
+    colorCore: false
+    colorNebulaA: false
+    colorNebulaB: false
+    colorRim: false
+    colorVoid: false
+    engageRangeCm: false
+    humVolume: false
+    maxRadiusCm: false
+    minRadiusCm: false
+    openSec: false
+    spreadGain: false
+    starCount: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - minRadiusCm: !<float> 12.000000
+      maxRadiusCm: !<float> 60.000000
+      spreadGain: 1.200000
+      engageRangeCm: !<float> 90.000000
+      closeDistanceCm: !<float> 10.000000
+      openSec: 0.550000
+      closeSec: 0.450000
+      starCount: !<float> 90.000000
+      colorRim: !<Vec4> {x: 1.000000, y: 0.820000, z: 0.350000, w: 1.000000}
+      colorCore: !<Vec4> {x: 1.000000, y: 0.970000, z: 0.850000, w: 1.000000}
+      colorVoid: !<Vec4> {x: 0.030000, y: 0.010000, z: 0.100000, w: 0.920000}
+      colorNebulaA: !<Vec4> {x: 0.200000, y: 0.950000, z: 0.900000, w: 1.000000}
+      colorNebulaB: !<Vec4> {x: 0.850000, y: 0.250000, z: 1.000000, w: 1.000000}
+      humVolume: 0.500000
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">MagicPowersPortalPower – trace a circle to open a portal</span>"}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Portal</span>"}'
+    - '// @ui {"widget":"group_start", "label":"Portal"}'
+    - '// @input float minRadiusCm = 12 {"hint":"Smallest portal radius (cm)", "widget":"slider", "min":5, "max":40, "step":1}'
+    - '// @input float maxRadiusCm = 60 {"hint":"Largest portal radius (cm)", "widget":"slider", "min":20, "max":150, "step":1}'
+    - '// @input float spreadGain = 1.2 {"hint":"Portal radius = inter-palm distance × this while both open palms are near the portal", "widget":"slider", "min":0.3, "max":3, "step":0.05}'
+    - '// @input float engageRangeCm = 90 {"hint":"Both palms must be within this distance (cm) of the portal centre to resize it", "widget":"slider", "min":20, "max":200, "step":5}'
+    - '// @input float closeDistanceCm = 10 {"hint":"Inter-palm distance (cm) below which the engaged hands close the portal", "widget":"slider", "min":3, "max":30, "step":0.5}'
+    - '// @input float openSec = 0.55 {"hint":"Seconds the portal takes to burst open", "widget":"slider", "min":0.1, "max":2, "step":0.05}'
+    - '// @input float closeSec = 0.45 {"hint":"Seconds the portal takes to collapse", "widget":"slider", "min":0.1, "max":2, "step":0.05}'
+    - '// @ui {"widget":"group_end"}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Look</span>"}'
+    - '// @ui {"widget":"group_start", "label":"Look"}'
+    - '// @input float starCount = 90 {"hint":"Stars visible through the portal", "widget":"slider", "min":10, "max":160, "step":5}'
+    - '// @input vec4 colorRim = "{1.0, 0.82, 0.35, 1.0}" {"hint":"Rim colour (rings and runes)", "widget":"color"}'
+    - '// @input vec4 colorCore = "{1.0, 0.97, 0.85, 1.0}" {"hint":"Hottest rim / star core colour", "widget":"color"}'
+    - '// @input vec4 colorVoid = "{0.03, 0.01, 0.1, 0.92}" {"hint":"Colour of the dark space seen through the portal (alpha = opacity; black is transparent on Specs)", "widget":"color"}'
+    - '// @input vec4 colorNebulaA = "{0.2, 0.95, 0.9, 1.0}" {"hint":"First nebula colour inside the portal", "widget":"color"}'
+    - '// @input vec4 colorNebulaB = "{0.85, 0.25, 1.0, 1.0}" {"hint":"Second nebula colour inside the portal", "widget":"color"}'
+    - '// @input float humVolume = 0.5 {"hint":"Volume of the otherworldly hum while the portal is open", "widget":"slider", "min":0, "max":1, "step":0.05}'
+    - '// @ui {"widget":"group_end"}'

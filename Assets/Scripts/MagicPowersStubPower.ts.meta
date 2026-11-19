@@ -1,0 +1,57 @@
+- !<AssetImportMetadata/f7aa4f26-b4f2-4994-a7ad-93601df7af7c>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 29dd1e24-e25d-463a-918d-dd3157b05d0e
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 29dd1e24-e25d-463a-918d-dd3157b05d0e
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> 762212d9-4788-4418-9542-0edabb1751d4
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/762212d9-4788-4418-9542-0edabb1751d4>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  VersionPrerelease: ""
+  UpdateOrder: 0
+  ComponentUid: af52d21e-e100-4714-905b-935729647323
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    color: false
+    glowSizeCm: false
+    powerIndex: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - powerIndex: !<float> 3.000000
+      color: !<Vec4> {x: 0.600000, y: 0.850000, z: 1.000000, w: 1.000000}
+      glowSizeCm: !<float> 4.000000
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">MagicPowersStubPower – placeholder power (extension point)</span>"}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Settings</span>"}'
+    - '// @ui {"widget":"group_start", "label":"Settings"}'
+    - '// @input float powerIndex = 3 {"hint":"Which power slot this placeholder represents", "widget":"combobox", "values":[{"label":"Ice", "value":3}, {"label":"Telekinesis", "value":4}, {"label":"Portal", "value":5}]}'
+    - '// @input vec4 color = "{0.6, 0.85, 1.0, 1.0}" {"hint":"Placeholder glow colour shown on an open palm", "widget":"color"}'
+    - '// @input float glowSizeCm = 4 {"hint":"Glow radius (cm)", "widget":"slider", "min":1, "max":12, "step":0.5}'
+    - '// @ui {"widget":"group_end"}'
