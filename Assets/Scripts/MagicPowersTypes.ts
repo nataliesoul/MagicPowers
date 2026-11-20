@@ -109,6 +109,7 @@ export enum GestureType {
   TrackingLost, // hand lost (effects should fade, state is kept)
   TrackingAcquired, // hand re-acquired
   CircleTrace, // index fingertip traced a closed circle (position = centre, direction = circle normal facing the user, strength = radius cm)
+  Wave, // an open raised hand swung side to side for a moment — "hello" (strength = swings counted)
 }
 
 export interface GestureEvent {
@@ -153,6 +154,8 @@ export class HandPose {
   velocity: vec3 = vec3.zero()
   /** Velocity component along the palm normal (cm/s). */
   pushSpeed = 0
+  /** 0..1 progress of a wave: an open raised hand swinging side to side. */
+  wave = 0
 
   constructor(side: HandSide) {
     this.side = side

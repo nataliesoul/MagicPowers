@@ -52,6 +52,8 @@
     trackingFadeInSec: false
     trackingFadeOutSec: false
     velocitySmoothing: false
+    waveSpeedCmPerSec: false
+    waveSwings: false
   ScriptTypesHidden:
     {}
   ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
@@ -74,6 +76,8 @@
       spreadRateCmPerSec: !<float> 70.000000
       fingerCurlRatio: 1.200000
       fingerExtendRatio: 1.850000
+      waveSpeedCmPerSec: !<float> 35.000000
+      waveSwings: !<float> 5.000000
       circleMinRadiusCm: !<float> 4.000000
       circleMaxRadiusCm: !<float> 32.000000
       circleWindowSec: 2.200000
@@ -106,6 +110,8 @@
     - '// @input float spreadRateCmPerSec = 70 {"hint":"Inter-palm distance change (cm/s) that fires HandsSpread / HandsTogether", "widget":"slider", "min":20, "max":200, "step":5}'
     - '// @input float fingerCurlRatio = 1.2 {"hint":"Finger tip/wrist ÷ knuckle/wrist ratio at which a finger counts as fully curled", "widget":"slider", "min":0.8, "max":1.6, "step":0.01}'
     - '// @input float fingerExtendRatio = 1.85 {"hint":"Finger tip/wrist ÷ knuckle/wrist ratio at which a finger counts as fully extended", "widget":"slider", "min":1.4, "max":2.4, "step":0.01}'
+    - '// @input float waveSpeedCmPerSec = 35 {"hint":"Sideways palm speed (cm/s) that counts as one swing of a wave", "widget":"slider", "min":15, "max":120, "step":5}'
+    - '// @input float waveSwings = 5 {"hint":"Side-to-side swings needed before a wave fires (more = harder to trigger by accident)", "widget":"slider", "min":3, "max":10, "step":1}'
     - '// @ui {"widget":"group_end"}'
     - '// @ui {"widget":"separator"}'
     - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Circle trace (Portal)</span>"}'

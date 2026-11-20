@@ -37,6 +37,10 @@ interface HandRuntime {
   trace: Array<{ p: vec3; t: number }>
   lastCircle: number
   traceIdleSince: number
+  waveSign: number
+  waveSwings: number
+  waveLastSwing: number
+  lastWave: number
 }
 
 @component
@@ -109,6 +113,16 @@ export class MagicPowersGestureRecognizer extends BaseScriptComponent {
   @hint("Finger tip/wrist ÷ knuckle/wrist ratio at which a finger counts as fully extended")
   @widget(new SliderWidget(1.4, 2.4, 0.01))
   fingerExtendRatio: number = 1.85
+
+  @input
+  @hint("Sideways palm speed (cm/s) that counts as one swing of a wave")
+  @widget(new SliderWidget(15, 120, 5))
+  waveSpeedCmPerSec: number = 35
+
+  @input
+  @hint("Side-to-side swings needed before a wave fires (more = harder to trigger by accident)")
+  @widget(new SliderWidget(3, 10, 1))
+  waveSwings: number = 5
   @ui.group_end
 
   @ui.separator
@@ -251,6 +265,10 @@ export class MagicPowersGestureRecognizer extends BaseScriptComponent {
       trace: [],
       lastCircle: -10,
       traceIdleSince: -1,
+      waveSign: 0,
+      waveSwings: 0,
+      waveLastSwing: -10,
+      lastWave: -10,
     }
   }
 
@@ -495,6 +513,8 @@ export class MagicPowersGestureRecognizer extends BaseScriptComponent {
   private deriveGestures(rt: HandRuntime, dt: number, now: number): void {
     const pose = rt.pose
     if (!pose.tracked) {
+      pose.wave = 0
+      rt.waveSwings = 0
       if (rt.palmUpWas) {
         rt.palmUpWas = false
         this.emit(GestureType.PalmUpEnd, pose.side, pose.palmCenter, pose.palmNormal, 0)
@@ -565,6 +585,29 @@ export class MagicPowersGestureRecognizer extends BaseScriptComponent {
     } else if (rt.pointSince !== -1) {
       if (rt.pointSince === 0) this.emit(GestureType.PointEnd, pose.side, pose.indexTip, pose.fingerDir, 0)
       rt.pointSince = -1
+    }
+
+    // Wave: an open hand, fingers up, swinging side to side. Each change of direction is a swing.
+    const camRight = this.cameraTransform ? this.cameraTransform.right : vec3.right()
+    const lateral = pose.velocity.dot(camRight)
+    const waving = pose.isOpen && !pose.isPalmUp && pose.fingerDir.y > 0.45
+    if (waving && Math.abs(lateral) > this.waveSpeedCmPerSec) {
+      const sign = lateral > 0 ? 1 : -1
+      if (sign !== rt.waveSign) {
+        rt.waveSign = sign
+        rt.waveSwings++
+        rt.waveLastSwing = now
+      }
+    }
+    if (!waving || now - rt.waveLastSwing > 0.7) {
+      rt.waveSwings = 0
+      rt.waveSign = 0
+    }
+    pose.wave = clamp01(rt.waveSwings / this.waveSwings)
+    if (rt.waveSwings >= this.waveSwings && now - rt.lastWave > 3) {
+      rt.lastWave = now
+      rt.waveSwings = 0
+      this.emit(GestureType.Wave, pose.side, pose.palmCenter, pose.palmNormal, this.waveSwings)
     }
 
     this.traceCircle(rt, now)

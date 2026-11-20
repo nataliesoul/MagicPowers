@@ -26,7 +26,7 @@ import { MagicPowersTelekinesisPower } from "./MagicPowersTelekinesisPower"
 import { MagicPowersPortalPower } from "./MagicPowersPortalPower"
 import { MagicPowersBodyTarget } from "./MagicPowersBodyTarget"
 import { SpellManager } from "./MagicPowersSpellManager"
-import { CastImpact, ELEMENT_PALETTES, EffectsContext, GestureEvent, GestureType, HandSide, MagicPower, POWER_COUNT, POWER_NAMES, PowerId } from "./MagicPowersTypes"
+import { CastImpact, ELEMENT_NAMES, ELEMENT_PALETTES, EffectsContext, GestureEvent, GestureType, HandSide, MagicPower, POWER_COUNT, POWER_NAMES, PowerId } from "./MagicPowersTypes"
 import { MagicSfx, MagicTextures } from "./MagicPowersAssetManifest"
 import { playOneShotAt, prewarmSfx, tickAudio } from "./MagicPowersAudioLib"
 import { FxCanvas, cameraBasis } from "./MagicPowersEffectsLib"
@@ -34,6 +34,8 @@ import { WorldMagic } from "./MagicPowersWorldMagic"
 import { TwoHandCaster } from "./MagicPowersCaster"
 import { ElementWheel } from "./MagicPowersElementWheel"
 import { MagicGuide } from "./MagicPowersGuide"
+import { MagicNetwork, NetState } from "./MagicPowersNetwork"
+import { MagicVoice, VoiceCommand } from "./MagicPowersVoice"
 
 @component
 export class MagicPowersMain extends BaseScriptComponent {
@@ -137,10 +139,22 @@ export class MagicPowersMain extends BaseScriptComponent {
   @ui.group_end
 
   @ui.separator
+  @ui.label('<span style="color: #60A5FA;">Together &amp; voice</span>')
+  @ui.group_start("Together & voice")
+  @input
+  @hint("Let players in the same room share one session: wave hello or say \"multiplayer\" to open it (needs the SpectaclesSyncKit prefab, Start Mode = Off)")
+  enableMultiplayer: boolean = true
+
+  @input
+  @hint("Listen for spoken commands: an element's name switches to it, \"multiplayer\" opens a shared session")
+  enableVoice: boolean = true
+  @ui.group_end
+
+  @ui.separator
   @ui.label('<span style="color: #60A5FA;">Editor</span>')
   @ui.group_start("Editor")
   @input
-  @hint("In Lens Studio: keys 1-6 select a power, N = next element, U toggles the mock palm-up gesture, B casts the current element at a tracked person")
+  @hint("In Lens Studio: keys 1-6 select a power, N = next element, M = open multiplayer, U toggles the mock palm-up gesture, B casts the current element at a tracked person")
   editorKeyboardShortcuts: boolean = true
 
   @input
@@ -159,6 +173,8 @@ export class MagicPowersMain extends BaseScriptComponent {
   private caster: TwoHandCaster | null = null
   private wheel: ElementWheel | null = null
   private guide: MagicGuide | null = null
+  private net: MagicNetwork | null = null
+  private voice: MagicVoice | null = null
   private wheelHand: HandSide | null = null
   private hideTimer: DelayedCallbackEvent | null = null
   private mockPalmUp = false
@@ -174,6 +190,7 @@ export class MagicPowersMain extends BaseScriptComponent {
     this.createEvent("OnDestroyEvent").bind(() => {
       this.started = false
       if (this.caster) this.caster.destroy()
+      if (this.voice) this.voice.stop()
     })
     if (this.editorKeyboardShortcuts) this.createEvent("KeyPressEvent").bind((e) => this.onKey(e))
     this.hideTimer = this.createEvent("DelayedCallbackEvent") as DelayedCallbackEvent
@@ -258,6 +275,7 @@ export class MagicPowersMain extends BaseScriptComponent {
 
     this.spells.setActive(this.defaultPower as PowerId)
     this.wheel.setActive(this.defaultPower as PowerId, false)
+    this.startTogether()
     this.started = true
   }
 
@@ -265,6 +283,11 @@ export class MagicPowersMain extends BaseScriptComponent {
 
   private onGesture(e: GestureEvent): void {
     if (!this.started || !this.ctx || !this.wheel || !this.caster) return
+    if (e.type === GestureType.Wave) {
+      // A wave is "hello": it opens the shared session (ignored while an orb or the wheel has the hands).
+      if (this.ctx.orb.presence < 0.1 && !this.wheel.isVisible) this.joinTogether()
+      return
+    }
     if (e.hand !== "both") {
       if (e.type === GestureType.PalmUp) this.showWheel(e.hand)
       else if ((e.type === GestureType.PalmUpEnd || e.type === GestureType.TrackingLost) && e.hand === this.wheelHand) this.scheduleHide()
@@ -321,7 +344,18 @@ export class MagicPowersMain extends BaseScriptComponent {
       this.world.clear()
       playOneShotAt(this.effectsRoot, MagicSfx.portalClose, rec.two.midpoint, 0.9)
     }
-    this.guide.update(dt, cam, this.ctx.orb, this.resetHold, rec.two.midpoint.add(vec3.up().uniformScale(14)))
+    // The same ring of light fills for a wave (inviting friends) as for the new-journey hold.
+    const canInvite = this.net !== null && this.net.isAvailable && (this.net.state === "solo" || this.net.state === "failed") && this.ctx.orb.presence < 0.1 && !this.wheel.isVisible
+    const waver = rec.left.wave >= rec.right.wave ? rec.left : rec.right
+    const waveRing = canInvite ? waver.wave : 0
+    const ringAt = waveRing > this.resetHold ? waver.palmCenter.add(vec3.up().uniformScale(16)) : rec.two.midpoint.add(vec3.up().uniformScale(14))
+    this.guide.update(dt, cam, this.ctx.orb, Math.max(this.resetHold, waveRing), ringAt)
+
+    if (this.net) {
+      this.net.update()
+      const orb = this.ctx.orb
+      this.net.sendOrb(active, orb.centre, orb.radius, orb.charge, orb.presence > 0.3)
+    }
 
     this.spells.tick(dt, rec.left, rec.right, rec.two)
     this.canvas.end(dt, this.clock, cam)
@@ -361,7 +395,10 @@ export class MagicPowersMain extends BaseScriptComponent {
     if (!this.wheel || !this.guide || !this.spells.hasPower(id)) return
     if (!this.spells.setActive(id)) return
     this.wheel.setActive(id, byGesture)
-    playOneShotAt(this.effectsRoot, MagicSfx.spellSelect, this.wheel.position, 0.8)
+    // heard at the wheel when it is open, otherwise just ahead of the wearer (a voice switch has no wheel)
+    const camT = this.ctx ? this.ctx.camera : null
+    const chimeAt = this.wheel.isVisible || !camT ? this.wheel.position : camT.getWorldPosition().add(camT.back.uniformScale(50))
+    playOneShotAt(this.effectsRoot, MagicSfx.spellSelect, chimeAt, 0.8)
     if (byGesture) this.guide.notifyElementChanged()
   }
 
@@ -390,6 +427,124 @@ export class MagicPowersMain extends BaseScriptComponent {
     this.wheelHand = null
   }
 
+  // ── Playing together + voice ────────────────────────────────────────────────
+
+  /** Wire the shared session and the spoken commands. Both are optional: without them the lens is solo and silent. */
+  private startTogether(): void {
+    if (!this.world || !this.caster || !this.guide) return
+    const world = this.world
+    const caster = this.caster
+
+    if (this.enableMultiplayer) {
+      const net = new MagicNetwork(this, this.debugLogging)
+      this.net = net
+      // what this player does goes out…
+      caster.onShot = (element, from, to, normal, power) => net.sendCast(element, from, to, normal, power)
+      world.onLocalImprint = (element, position, normal, power) => net.sendImprint(element, position, normal, power)
+      world.onLocalEnchant = (element, power, at) => net.sendEnchant(element, at, power)
+      // …and what the others do comes in
+      net.onRemoteCast = (element, from, to, normal, power) => caster.spawnRemoteShot(element, from, to, normal, power)
+      net.onRemoteImprint = (element, position, normal, power) => world.imprint(element, position, normal, power, true)
+      net.onRemoteOrb = (player, element, centre, radius, charge) => caster.setRemoteOrb(player, element, centre, radius, charge)
+      net.onRemoteEnchant = (element, position, power) => this.onRemoteEnchant(element, position, power)
+      net.onStateChanged = (state) => this.onNetState(state)
+      net.onPlayerJoined = (name) => {
+        if (!this.guide) return
+        this.guide.say(`${name} joined`, "Your spells are shared", 4)
+        playOneShotAt(this.effectsRoot, MagicSfx.spellSelect, this.aheadOfWearer(60), 0.9)
+      }
+      net.onPlayerLeft = (name) => {
+        if (this.guide) this.guide.say(`${name} left the circle`, "", 3)
+      }
+    }
+
+    if (this.enableVoice) {
+      this.voice = new MagicVoice(this.debugLogging)
+      this.voice.onCommand = (command) => this.onVoice(command)
+      this.voice.start()
+    }
+
+    // Once the gestures are learned, say what else is possible — worked out at that moment, so a
+    // voice backend that failed to start is never advertised.
+    this.guide.tipsProvider = () => {
+      const tips: Array<{ title: string; sub: string; hold: number }> = []
+      const voiceOn = this.voice !== null && this.voice.isListening
+      if (voiceOn) tips.push({ title: "Your voice works too", sub: 'Say "fire", "ice", "lightning"...', hold: 5 })
+      if (this.net && this.net.isAvailable && !this.net.isLive) tips.push({ title: "Play together", sub: voiceOn ? 'Wave hello, or say "multiplayer"' : "Wave hello to invite friends", hold: 6 })
+      return tips
+    }
+    if (this.guide.tutorialDone) for (const tip of this.guide.tipsProvider()) this.guide.queue(tip.title, tip.sub, tip.hold)
+  }
+
+  private aheadOfWearer(cm: number): vec3 {
+    if (!this.ctx) return vec3.zero()
+    return this.ctx.camera.getWorldPosition().add(this.ctx.camera.back.uniformScale(cm))
+  }
+
+  /** Open the shared session — from a wave, from saying "multiplayer", or key M in the editor. */
+  private joinTogether(): void {
+    if (!this.guide) return
+    const net = this.net
+    if (!net || !net.isAvailable) {
+      this.guide.say("Playing together is off", "", 3)
+      return
+    }
+    if (net.state === "live") {
+      const n = net.playerCount
+      this.guide.say("The circle is open", n > 1 ? `${n} mages here` : "Waiting for friends to join", 3)
+      return
+    }
+    if (net.state === "joining") return
+    net.join()
+  }
+
+  private onNetState(state: NetState): void {
+    if (!this.guide || !this.world || !this.ctx) return
+    if (state === "joining") {
+      this.guide.say("Opening a shared circle", "Look around slowly so the room can be mapped", 14)
+      playOneShotAt(this.effectsRoot, MagicSfx.selectorOpen, this.aheadOfWearer(60), 0.8)
+    } else if (state === "live") {
+      const n = this.net ? this.net.playerCount : 1
+      this.guide.say("The circle is open", n > 1 ? `${n} mages here — spells are shared` : "Friends can join you now", 5)
+      this.world.fanfare(this.aheadOfWearer(90), cameraBasis(this.ctx.camera))
+    } else if (state === "failed") {
+      this.guide.say("The circle would not open", "Wave again to retry", 5)
+    }
+  }
+
+  /** Another player's cast landed on a person standing at `position`: is that me, or someone I can see? */
+  private onRemoteEnchant(element: PowerId, position: vec3, power: number): void {
+    if (!this.world || !this.guide || !this.ctx) return
+    const head = this.ctx.camera.getWorldPosition()
+    const flat = new vec3(position.x - head.x, 0, position.z - head.z).length
+    if (flat < 75 && Math.abs(position.y - head.y) < 130) {
+      this.world.enchantSelf(element, power)
+      this.guide.say(`${ELEMENT_NAMES[element]}!`, "A friend's spell caught you", 2.5)
+      return
+    }
+    const body = MagicPowersBodyTarget.instance
+    if (!body || !body.isTracking()) return
+    for (const p of body.bodyPoints()) {
+      if (p.distance(position) < 90) {
+        this.world.enchantBody(element, power, position, true)
+        return
+      }
+    }
+  }
+
+  private onVoice(command: VoiceCommand): void {
+    if (!this.started || !this.guide || !this.world) return
+    if (command.kind === "element") {
+      if (this.spells.activePowerId === command.element) return
+      this.selectElement(command.element, true)
+      this.guide.say(ELEMENT_NAMES[command.element], "", 1.6)
+    } else if (command.kind === "multiplayer") this.joinTogether()
+    else if (command.kind === "dispel") {
+      this.world.clear()
+      this.guide.say("Dispelled", "", 1.6)
+    }
+  }
+
   // ── Editor shortcuts ────────────────────────────────────────────────────────
 
   private onKey(e: KeyPressEvent): void {
@@ -409,6 +564,7 @@ export class MagicPowersMain extends BaseScriptComponent {
       }
     }
     if (e.key === Keys.N) this.stepElement(1)
+    else if (e.key === Keys.M) this.joinTogether()
     else if (e.key === Keys.B) this.castAtPersonForPreview()
     else if (e.key === Keys.U) {
       this.mockPalmUp = !this.mockPalmUp

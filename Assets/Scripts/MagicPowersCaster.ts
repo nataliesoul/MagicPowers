@@ -60,6 +60,8 @@ interface Shot {
   travelled: number
   probing: boolean
   done: boolean
+  /** Another player's orb: drawn in flight, but its landing is theirs to report. */
+  remote: boolean
   seed: number
 }
 
@@ -69,6 +71,8 @@ export class TwoHandCaster {
   onLaunch: ((element: PowerId, power: number) => void) | null = null
   /** Fired when a released orb reaches a surface or a person. */
   onImpact: ((hit: CastImpact) => void) | null = null
+  /** Fired when THIS player releases an orb, with its flight (multiplayer shows it to the others). */
+  onShot: ((element: PowerId, from: vec3, to: vec3, normal: vec3, power: number) => void) | null = null
 
   private root: SceneObject
   private core: SphereVisual
@@ -76,6 +80,8 @@ export class TwoHandCaster {
   private probe: SurfaceProbe
   private body: BodyAnchor | null = null
   private shots: Shot[] = []
+  /** Orbs other players are holding right now, by player. */
+  private remoteOrbs: { [player: string]: { element: PowerId; centre: vec3; shown: vec3; radius: number; charge: number; seenAt: number; presence: number } } = {}
   private aim: Target = { pos: vec3.zero(), normal: vec3.up(), person: false }
   private aimValid = false
   private aimShown = 0
@@ -193,6 +199,7 @@ export class TwoHandCaster {
     }
     if (this.aimShown > 0.02 && orb.presence > 0.02) this.drawReticle(pal, cam)
     this.updateShots(dt, cam)
+    this.drawRemoteOrbs(dt, cam)
   }
 
   // ── Aim ─────────────────────────────────────────────────────────────────────
@@ -412,6 +419,78 @@ export class TwoHandCaster {
     }
   }
 
+  // ── Other players ───────────────────────────────────────────────────────────
+
+  /** Another player released an orb: show it flying. Its landing arrives as its own network event. */
+  spawnRemoteShot(element: PowerId, from: vec3, to: vec3, normal: vec3, power: number): void {
+    this.shots.push({
+      element,
+      pal: ELEMENT_PALETTES[element],
+      guided: true,
+      from,
+      ctrl: this.arcControl(from, to),
+      to,
+      normal,
+      person: false,
+      t: 0,
+      dur: Math.max(0.22, Math.min(1.1, from.distance(to) / this.opts.flightSpeed)),
+      pos: from,
+      prev: from,
+      vel: vec3.zero(),
+      power,
+      radius: lerp(4, 8, clamp01(power)),
+      travelled: 0,
+      probing: false,
+      done: false,
+      remote: true,
+      seed: Math.random() * 100,
+    })
+    if (this.shots.length > 8) this.shots.shift()
+    playOneShotAt(this.ctx.effectsRoot, element === PowerId.Fireball ? MagicSfx.fireLaunch : element === PowerId.Ice ? MagicSfx.iceShoot : MagicSfx.energyLaunch, from, 0.7)
+  }
+
+  /** The orb another player is holding (radius 0 = they have let go). */
+  setRemoteOrb(player: string, element: PowerId, centre: vec3, radius: number, charge: number): void {
+    let o = this.remoteOrbs[player]
+    if (!o) {
+      if (radius <= 0) return
+      o = { element, centre, shown: centre, radius, charge, seenAt: this.time, presence: 0 }
+      this.remoteOrbs[player] = o
+    }
+    if (radius > 0) {
+      o.element = element
+      o.centre = centre
+      o.radius = radius
+      o.charge = charge
+      o.seenAt = this.time
+    } else o.seenAt = -10
+  }
+
+  private drawRemoteOrbs(dt: number, cam: CamBasis): void {
+    const c = this.canvas
+    for (const id in this.remoteOrbs) {
+      const o = this.remoteOrbs[id]
+      const fresh = this.time - o.seenAt < 0.6
+      o.presence = approach(o.presence, fresh ? 1 : 0, fresh ? 8 : 5, dt)
+      if (o.presence < 0.02) {
+        if (!fresh) delete this.remoteOrbs[id]
+        continue
+      }
+      o.shown = approachVec(o.shown, o.centre, 14, dt)
+      const pal = ELEMENT_PALETTES[o.element]
+      const p = o.presence
+      const r = Math.max(3, o.radius) * p
+      c.glows.quad(o.shown, cam.right, cam.up, r * 2.2, r * 2.2, tint(pal.main, 1, 0.45 * p))
+      c.glows.quad(o.shown, cam.right, cam.up, r * (0.6 + 0.3 * o.charge), r * (0.6 + 0.3 * o.charge), tint(pal.core, 1, 0.85 * p))
+      c.rings.quad(o.shown, cam.right, cam.up, r * 1.25, r * 1.25, tint(pal.main, 1, 0.5 * p))
+      for (let k = 0; k < 8; k++) {
+        const a = this.time * (1.8 + 3 * o.charge) + k * 0.785
+        const pos = o.shown.add(cam.right.uniformScale(Math.cos(a) * r * 1.1)).add(cam.up.uniformScale(Math.sin(a) * r * 0.8)).add(cam.look.uniformScale(Math.sin(a * 1.3) * r * 0.4))
+        c.motes.quad(pos, cam.right, cam.up, 0.7 * p, 0.7 * p, tint(k % 2 === 0 ? pal.core : pal.accent, 1, 0.85 * p))
+      }
+    }
+  }
+
   // ── Release + flight ────────────────────────────────────────────────────────
 
   private launch(element: PowerId, cam: CamBasis): void {
@@ -442,9 +521,11 @@ export class TwoHandCaster {
       travelled: 0,
       probing: false,
       done: false,
+      remote: false,
       seed: Math.random() * 100,
     })
-    if (this.shots.length > 4) this.shots.shift()
+    if (this.shots.length > 8) this.shots.shift()
+    if (this.onShot) this.onShot(element, from, to, guided ? this.aim.normal : vec3.up(), power)
     const root = this.ctx.effectsRoot
     switch (element) {
       case PowerId.Fireball:
@@ -476,7 +557,7 @@ export class TwoHandCaster {
   private land(s: Shot, position: vec3, normal: vec3, person: boolean): void {
     if (s.done) return
     s.done = true
-    if (this.onImpact) this.onImpact({ element: s.element, position, normal, power: s.power, surface: person ? "person" : classifySurface(normal) })
+    if (!s.remote && this.onImpact) this.onImpact({ element: s.element, position, normal, power: s.power, surface: person ? "person" : classifySurface(normal) })
   }
 
   private updateShots(dt: number, cam: CamBasis): void {

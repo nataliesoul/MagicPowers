@@ -35,6 +35,8 @@
     defaultPower: false
     editorKeyboardShortcuts: false
     effectsRoot: false
+    enableMultiplayer: false
+    enableVoice: false
     energyPower: false
     fireballPower: false
     gestureRecognizer: false
@@ -78,6 +80,8 @@
       selectorHeightCm: !<float> 13.000000
       selectorHideDelaySec: 0.700000
       rememberProgress: true
+      enableMultiplayer: true
+      enableVoice: true
       editorKeyboardShortcuts: true
       mockCyclePowers: true
       debugLogging: false
@@ -122,9 +126,15 @@
     - "// @input bool rememberProgress = true {\"hint\":\"Remember the wearer's spellbook and that they finished the onboarding between sessions (on device)\"}"
     - '// @ui {"widget":"group_end"}'
     - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Together &amp; voice</span>"}'
+    - '// @ui {"widget":"group_start", "label":"Together & voice"}'
+    - '// @input bool enableMultiplayer = true {"hint":"Let players in the same room share one session: wave hello or say \"multiplayer\" to open it (needs the SpectaclesSyncKit prefab, Start Mode = Off)"}'
+    - "// @input bool enableVoice = true {\"hint\":\"Listen for spoken commands: an element's name switches to it, \\\"multiplayer\\\" opens a shared session\"}"
+    - '// @ui {"widget":"group_end"}'
+    - '// @ui {"widget":"separator"}'
     - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Editor</span>"}'
     - '// @ui {"widget":"group_start", "label":"Editor"}'
-    - '// @input bool editorKeyboardShortcuts = true {"hint":"In Lens Studio: keys 1-6 select a power, N = next element, U toggles the mock palm-up gesture, B casts the current element at a tracked person"}'
+    - '// @input bool editorKeyboardShortcuts = true {"hint":"In Lens Studio: keys 1-6 select a power, N = next element, M = open multiplayer, U toggles the mock palm-up gesture, B casts the current element at a tracked person"}'
     - "// @input bool mockCyclePowers = true {\"hint\":\"While the editor mock hands are active, the mock palm-up also 'pinches' so every element is previewed in turn\"}"
     - '// @input bool debugLogging {"hint":"Log power switches, casts and discoveries"}'
     - '// @ui {"widget":"group_end"}'

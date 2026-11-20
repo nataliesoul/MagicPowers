@@ -117,6 +117,12 @@ export class WorldMagic implements WorldMagicApi {
   private strikes: Strike[] = []
   private enchant: Enchant | null = null
   private body: BodyAnchor | null = null
+  /** THIS player's magic marked a surface (multiplayer shares it with the others). */
+  onLocalImprint: ((element: PowerId, position: vec3, normal: vec3, power: number) => void) | null = null
+  /** THIS player's cast landed on a person. */
+  onLocalEnchant: ((element: PowerId, power: number, at: vec3) => void) | null = null
+  private selfHit: { element: PowerId; pal: ElementPalette; age: number; life: number; seed: number } | null = null
+  private headAt: vec3 = vec3.zero()
   /** Element colour while the wearer holds an orb: a tracked person glows faintly in it ("you can cast on them"). */
   bodyHint: vec4 | null = null
   /** True while the reticle is on the person: the glow brightens. */
@@ -161,10 +167,12 @@ export class WorldMagic implements WorldMagicApi {
 
   // ── Imprinting + reactions ──────────────────────────────────────────────────
 
-  imprint(element: PowerId, position: vec3, normal: vec3, power: number): void {
+  /** `fromRemote` = another player's magic, arriving over the network: apply it, do not send it back. */
+  imprint(element: PowerId, position: vec3, normal: vec3, power: number, fromRemote = false): void {
     if (element === PowerId.Portal) return
     const n = normal.length > 1e-3 ? normal.normalize() : vec3.up()
     const pw = clamp01(power)
+    if (!fromRemote && this.onLocalImprint) this.onLocalImprint(element, position, n, pw)
     const newR = this.radiusFor(element, pw)
     const hit = this.overlapping(position, newR)
     if (hit) {
@@ -581,6 +589,8 @@ export class WorldMagic implements WorldMagicApi {
     this.updateStrikes(dt, cam)
     this.updateFlashes(dt, cam)
     this.updateBody(dt, cam)
+    this.headAt = cam.pos
+    this.updateSelf(dt, cam, left, right)
   }
 
   private stirFrom(p: Patch, h: HandPose): number {
@@ -833,8 +843,9 @@ export class WorldMagic implements WorldMagicApi {
   }
 
   /** A cast landed on a tracked person: they wear the element until it fades (or reacts). */
-  enchantBody(element: PowerId, power: number, at: vec3): void {
+  enchantBody(element: PowerId, power: number, at: vec3, fromRemote = false): void {
     if (element === PowerId.Portal) return
+    if (!fromRemote && this.onLocalEnchant) this.onLocalEnchant(element, power, at)
     const cur = this.enchant
     const pal = ELEMENT_PALETTES[element]
     const toCam = vec3.up()
@@ -872,6 +883,55 @@ export class WorldMagic implements WorldMagicApi {
     this.burstParticles(element, at, toCam, 1)
     this.impactSound(element, at)
     this.spellEvent.invoke({ spell: IMPRINT_SPELL[element], position: at, surface: "person" })
+  }
+
+  /** Another player's cast landed on the wearer: the element flares around them for a few seconds. */
+  enchantSelf(element: PowerId, power: number): void {
+    if (element === PowerId.Portal) return
+    this.selfHit = { element, pal: ELEMENT_PALETTES[element], age: 0, life: lerp(4, 7, clamp01(power)), seed: Math.random() * 100 }
+    this.impactSound(element, this.headAt)
+  }
+
+  /**
+   * Being hit is drawn where the wearer can see it: rising from the lower edge of their view and on
+   * both hands (their own body is outside the display).
+   */
+  private updateSelf(dt: number, cam: CamBasis, left: HandPose, right: HandPose): void {
+    const hit = this.selfHit
+    if (!hit) return
+    hit.age += dt
+    const f = hit.age / hit.life
+    if (f >= 1) {
+      this.selfHit = null
+      return
+    }
+    const I = Math.min(1, hit.age * 4) * (1 - f * f)
+    const c = this.canvas
+    const t = this.time
+    const pal = hit.pal
+    const up = cam.up
+    const spots: vec3[] = []
+    const edge = cam.pos.add(cam.look.uniformScale(55)).sub(up.uniformScale(13))
+    for (let k = 0; k < 6; k++) spots.push(edge.add(cam.right.uniformScale(-22 + k * 8.8)))
+    if (left.confidence > 0.3) spots.push(left.palmCenter)
+    if (right.confidence > 0.3) spots.push(right.palmCenter)
+    for (let i = 0; i < spots.length; i++) {
+      const j = spots[i]
+      const nz = flickerNoise(i, hit.seed, t, 10)
+      c.glows.quad(j, cam.right, up, 7 * I, 7 * I, tint(pal.main, 1, 0.3 * I))
+      if (hit.element === PowerId.Fireball) {
+        const h = 11 * (0.6 + 0.4 * (0.5 + 0.5 * nz)) * I
+        c.flames.quad(j.add(up.uniformScale(h * 0.45)), cam.right, up, h * 0.3, h * 0.5, tint(i % 2 === 0 ? pal.core : pal.main, 1, 0.8 * I))
+      } else if (hit.element === PowerId.Ice) {
+        const len = (6 + 3 * Math.abs(hash1(i * 2.3 + hit.seed))) * Math.min(1, hit.age * 2) * I
+        c.crystals.quad(j.add(up.uniformScale(len * 0.5)), cam.right, up, len * 0.2, len * 0.5, tint(i % 2 === 0 ? pal.core : pal.main, 1, 0.85 * I))
+      } else if (hit.element === PowerId.Lightning) {
+        if (i + 1 < spots.length && nz > -0.2) c.arc(j, spots[i + 1], 6, j.distance(spots[i + 1]) * 0.3, hit.seed + i * 3.1, t, 2.2 * I, 0.5 * I, tint(pal.main, 1, 0.75 * I), tint(pal.core, 1, I), cam.pos)
+      } else {
+        const a = t * 2.2 + i
+        c.stars.quadRotated(j.add(cam.right.uniformScale(Math.cos(a) * 4)).add(up.uniformScale(Math.sin(a) * 4)), cam.right, up, 1.2 * I, 1.2 * I, tint(pal.core, 1, 0.85 * I), a)
+      }
+    }
   }
 
   private updateBody(dt: number, cam: CamBasis): void {

@@ -57,6 +57,11 @@ interface Toast {
 export class MagicGuide {
   /** Fired once when the last spell is discovered. */
   onMastery: (() => void) | null = null
+  /**
+   * Tips to show once the onboarding is done (voice, playing together). Asked for at that moment, so
+   * it can report what is really available by then.
+   */
+  tipsProvider: (() => Array<{ title: string; sub: string; hold: number }>) | null = null
 
   private title: FadingLabel
   private sub: FadingLabel
@@ -189,6 +194,7 @@ export class MagicGuide {
     this.save()
     this.sticky = false
     this.say("You are ready", "Mix elements to fill your spellbook", 4.5)
+    if (this.tipsProvider) for (const tip of this.tipsProvider()) this.queued.push(tip)
     if (this.foundCount === this.found.length) this.master()
   }
 
@@ -213,6 +219,11 @@ export class MagicGuide {
   }
 
   /** Show a two-line caption for a few seconds. */
+  /** Show a caption after whatever is showing now has finished. */
+  queue(title: string, sub: string, hold: number): void {
+    this.queued.push({ title, sub, hold })
+  }
+
   say(title: string, sub: string, hold: number): void {
     this.title.setText(title)
     this.sub.setText(sub)
@@ -257,7 +268,7 @@ export class MagicGuide {
       else if (this.captionAlpha < 0.03 && this.queued.length > 0) {
         const q = this.queued.shift()!
         this.say(q.title, q.sub, q.hold)
-      }
+      } else if (this.captionAlpha < 0.03 && this.step < 3) this.showStep() // a passing notice is over: back to the lesson
     }
     const wantCaption = this.sticky || this.captionFor > 0
     this.captionAlpha = approach(this.captionAlpha, wantCaption ? 1 : 0, wantCaption ? 6 : 3, dt)
