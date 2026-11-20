@@ -1,0 +1,51 @@
+- !<AssetImportMetadata/dae2fbfa-c32c-4a88-9847-d63f3a63a283>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 9d161ab6-9861-4b9c-8fde-39e5d8639dec
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 9d161ab6-9861-4b9c-8fde-39e5d8639dec
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> 443cdb0d-3615-4fb5-92a1-da9702be3cd8
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/443cdb0d-3615-4fb5-92a1-da9702be3cd8>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  VersionPrerelease: ""
+  UpdateOrder: 0
+  ComponentUid: fe4e41fa-3a40-4734-8a65-a381238ed3e1
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    aimSizeScale: false
+    alwaysShowBody: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - aimSizeScale: 1.150000
+      alwaysShowBody: false
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">MagicPowersBodyTarget – cast magic on a tracked person</span>"}'
+    - '// @ui {"widget":"separator"}'
+    - '// @input float aimSizeScale = 1.15 {"hint":"Multiplier on the aiming volume around each joint; raise it to make people easier to hit", "widget":"slider", "min":0.5, "max":2, "step":0.05}'
+    - '// @input bool alwaysShowBody {"hint":"Debug: keep the body mesh faintly visible whenever a person is tracked"}'

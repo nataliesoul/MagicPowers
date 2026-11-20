@@ -84,6 +84,8 @@ interface Shard {
   hit: boolean
   probing: boolean
   seed: number
+  /** The one shard of its volley that leaves lasting frost where it lands. */
+  lead: boolean
 }
 
 interface FrostBurst {
@@ -392,6 +394,7 @@ export class MagicPowersIcePower extends MagicPower {
         hit: false,
         probing: false,
         seed: Math.random() * 100,
+        lead: i === 0,
       })
     }
     while (this.shards.length > 24) this.shards.shift()
@@ -648,7 +651,8 @@ export class MagicPowersIcePower extends MagicPower {
         this.probe.probe(prev, ahead, (hit) => {
           sh.probing = false
           if (hit && !sh.hit) {
-            this.burst(hit.position, hit.normal, lerp(8, 14, Math.random()))
+            if (sh.lead) this.ctx!.world.imprint(PowerId.Ice, hit.position, hit.normal, 0.5)
+            else this.burst(hit.position, hit.normal, lerp(8, 14, Math.random()))
             sh.hit = true
           }
         })

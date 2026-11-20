@@ -30,7 +30,7 @@
     Scale: {x: 1.000000, y: 1.000000, z: 1.000000}
     HasSegmentScaleCompensation: false
   Children:
-    []
+    - !<own> 13c9a461-89c4-401d-8ba5-0ef7f30acf28
   Components:
     - !<own> 00000000-0000-0065-0000-000000000065
     - !<own> e5553c8a-0b7e-4ef4-92d9-3e1318fb82c1
@@ -428,6 +428,22 @@
     - !<own> bbcddeb1-2c47-482e-861a-4f2d74fda27a
   Components:
     []
+- !<SceneObject/0eec444a-ad12-4847-8d16-7e625d02b815>
+  PrefabRemaps:
+    []
+  Name: Body Mesh
+  Enabled: true
+  Layers: 1
+  LocalTransform: !<TransformEntity>
+    Position: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Scale: {x: 1.000000, y: 1.000000, z: 1.000000}
+    HasSegmentScaleCompensation: false
+  Children:
+    []
+  Components:
+    - !<own> 78f23e4e-5fd8-4419-8124-ab5384e85525
+    - !<own> 99d9ea36-1f64-475d-b92e-6818f063799d
 - !<SceneObject/0f983d21-20bc-4d89-a991-fbb95bacbd64>
   PrefabRemaps:
     []
@@ -500,21 +516,6 @@
   ScriptTypes:
     "":
       {}
-- !<SceneObject/125e4959-9be2-45b3-9799-a95c0e0ed97f>
-  PrefabRemaps:
-    []
-  Name: SpellSelector
-  Enabled: true
-  Layers: 1
-  LocalTransform: !<TransformEntity>
-    Position: {x: 0.000000, y: 0.000000, z: -55.000000}
-    Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
-    Scale: {x: 1.000000, y: 1.000000, z: 1.000000}
-    HasSegmentScaleCompensation: false
-  Children:
-    []
-  Components:
-    - !<own> 96574d61-16e9-4528-b32b-4128f869ab36
 - !<SceneObject/126f3577-bc27-4a20-8d6e-a511bc459c49>
   PrefabRemaps:
     []
@@ -528,6 +529,21 @@
     HasSegmentScaleCompensation: false
   Children:
     - !<own> a6af4948-9adc-4052-ae22-db902dd2764e
+  Components:
+    []
+- !<SceneObject/13c9a461-89c4-401d-8ba5-0ef7f30acf28>
+  PrefabRemaps:
+    []
+  Name: Effects
+  Enabled: true
+  Layers: 1
+  LocalTransform: !<TransformEntity>
+    Position: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Scale: {x: 1.000000, y: 1.000000, z: 1.000000}
+    HasSegmentScaleCompensation: false
+  Children:
+    - !<own> 8392127e-210d-47cc-a5a6-455d78fbe8dd
   Components:
     []
 - !<SceneObject/181c239f-175e-4912-94fc-d37a2599b2d6>
@@ -567,40 +583,20 @@
   Enabled: true
   ScriptAsset: !<reference> d9f4c4af-0c99-4b0d-97b8-1008ecf7ff08
   ScriptInputsDefault:
-    radiusPerDistance: true
-    minRadiusCm: true
-    maxRadiusCm: true
-    compressBrightness: true
-    spinSpeed: true
-    shellParticles: true
-    launchSpeed: true
-    waveGrowth: true
-    maxRangeCm: true
     shieldEnabled: true
     shieldRadiusCm: true
     colorCore: true
     colorBody: true
     colorShell: true
-    humVolume: true
   ScriptTypesDefault:
     {}
   ScriptInputs:
     "":
-      radiusPerDistance: 0.300000
-      minRadiusCm: !<float> 3.000000
-      maxRadiusCm: !<float> 15.000000
-      compressBrightness: 1.200000
-      spinSpeed: 1.800000
-      shellParticles: !<float> 40.000000
-      launchSpeed: !<float> 420.000000
-      waveGrowth: 1.500000
-      maxRangeCm: !<float> 800.000000
       shieldEnabled: true
       shieldRadiusCm: !<float> 14.000000
       colorCore: !<Vec4> {x: 1.000000, y: 0.850000, z: 1.000000, w: 1.000000}
       colorBody: !<Vec4> {x: 0.620000, y: 0.250000, z: 1.000000, w: 1.000000}
       colorShell: !<Vec4> {x: 0.950000, y: 0.450000, z: 1.000000, w: 1.000000}
-      humVolume: 0.500000
   ScriptTypes:
     "":
       {}
@@ -1154,7 +1150,6 @@
     HasSegmentScaleCompensation: false
   Children:
     - !<own> 0c78f988-cad6-4e8d-ab2d-096f6ed3f170
-    - !<own> d804f266-c9a5-4e72-9ef9-a47a50052cf6
     - !<own> d049b744-2b97-4e52-a00b-89d8e0ed8f66
     - !<own> 1aeb0ce4-ac91-4412-83fc-c08e366de490
   Components:
@@ -1372,18 +1367,52 @@
 - !<ScriptComponent/6d26ed85-544a-40c9-9d0f-dc1dc1a4d092>
   PrefabRemaps:
     []
-  Name: MagicPowersStubPower
+  Name: MagicPowersTelekinesisPower
   Enabled: true
-  ScriptAsset: !<reference> 29dd1e24-e25d-463a-918d-dd3157b05d0e
+  ScriptAsset: !<reference> 514bc0bd-18eb-4cb7-a742-e4b3b8daaa29
   ScriptInputsDefault:
-    glowSizeCm: true
+    objectCount: true
+    spawnDistMinCm: true
+    spawnDistMaxCm: true
+    spawnArcDeg: true
+    objectRadiusCm: true
+    aimConeDeg: true
+    grabDwellSec: true
+    reachCm: true
+    pullGain: true
+    spinGain: true
+    flingSpeedMin: true
+    flingSpeedMax: true
+    gravity: true
+    restitution: true
+    colorCore: true
+    colorAura: true
+    colorCrystal: true
+    colorOrb: true
+    humVolume: true
   ScriptTypesDefault:
     {}
   ScriptInputs:
     "":
-      powerIndex: !<float> 4.000000
-      color: !<Vec4> {x: 0.350000, y: 1.000000, z: 0.600000, w: 1.000000}
-      glowSizeCm: !<float> 4.000000
+      objectCount: !<float> 5.000000
+      spawnDistMinCm: !<float> 100.000000
+      spawnDistMaxCm: !<float> 160.000000
+      spawnArcDeg: !<float> 45.000000
+      objectRadiusCm: 4.500000
+      aimConeDeg: !<float> 28.000000
+      grabDwellSec: 0.350000
+      reachCm: !<float> 350.000000
+      pullGain: !<float> 3.000000
+      spinGain: 2.500000
+      flingSpeedMin: !<float> 260.000000
+      flingSpeedMax: !<float> 820.000000
+      gravity: !<float> 620.000000
+      restitution: 0.420000
+      colorCore: !<Vec4> {x: 0.750000, y: 0.950000, z: 1.000000, w: 1.000000}
+      colorAura: !<Vec4> {x: 0.350000, y: 1.000000, z: 0.650000, w: 1.000000}
+      colorCrystal: !<Vec4> {x: 0.550000, y: 0.350000, z: 1.000000, w: 1.000000}
+      colorOrb: !<Vec4> {x: 1.000000, y: 0.750000, z: 0.350000, w: 1.000000}
+      humVolume: 0.500000
   ScriptTypes:
     "":
       {}
@@ -1480,18 +1509,42 @@
 - !<ScriptComponent/76833931-a3e3-46df-b1c9-5721437ab22b>
   PrefabRemaps:
     []
-  Name: MagicPowersStubPower
+  Name: MagicPowersPortalPower
   Enabled: true
-  ScriptAsset: !<reference> 29dd1e24-e25d-463a-918d-dd3157b05d0e
+  ScriptAsset: !<reference> 547d6337-9d63-4321-9f8e-b9e9e2ed46eb
   ScriptInputsDefault:
-    glowSizeCm: true
+    minRadiusCm: true
+    maxRadiusCm: true
+    spreadGain: true
+    engageRangeCm: true
+    closeDistanceCm: true
+    openSec: true
+    closeSec: true
+    starCount: true
+    colorRim: true
+    colorCore: true
+    colorVoid: true
+    colorNebulaA: true
+    colorNebulaB: true
+    humVolume: true
   ScriptTypesDefault:
     {}
   ScriptInputs:
     "":
-      powerIndex: !<float> 5.000000
-      color: !<Vec4> {x: 0.350000, y: 0.300000, z: 1.000000, w: 1.000000}
-      glowSizeCm: !<float> 4.000000
+      minRadiusCm: !<float> 12.000000
+      maxRadiusCm: !<float> 60.000000
+      spreadGain: 1.200000
+      engageRangeCm: !<float> 90.000000
+      closeDistanceCm: !<float> 10.000000
+      openSec: 0.550000
+      closeSec: 0.450000
+      starCount: !<float> 90.000000
+      colorRim: !<Vec4> {x: 1.000000, y: 0.820000, z: 0.350000, w: 1.000000}
+      colorCore: !<Vec4> {x: 1.000000, y: 0.970000, z: 0.850000, w: 1.000000}
+      colorVoid: !<Vec4> {x: 0.030000, y: 0.010000, z: 0.100000, w: 0.920000}
+      colorNebulaA: !<Vec4> {x: 0.200000, y: 0.950000, z: 0.900000, w: 1.000000}
+      colorNebulaB: !<Vec4> {x: 0.850000, y: 0.250000, z: 1.000000, w: 1.000000}
+      humVolume: 0.500000
   ScriptTypes:
     "":
       {}
@@ -1525,6 +1578,26 @@
     []
   Components:
     - !<own> c8e031d3-a8a1-468a-a419-427f8556de4c
+- !<RenderMeshVisual/78f23e4e-5fd8-4419-8124-ab5384e85525>
+  PrefabRemaps:
+    []
+  Name: Render Mesh Visual
+  Enabled: true
+  RenderOrder: 0
+  StretchMode: Stretch
+  VerticalAlignment: Center
+  HorizontalAlignment: Center
+  MeshShadowMode: None
+  ShadowColor: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+  ShadowDensity: 1.000000
+  Materials:
+    - !<reference> b7deb05e-ebab-4f11-9f2f-2119217ae011
+  Mesh: !<reference> 47439e52-c17f-457f-a6bf-1025e8a7165f
+  Skin: !<reference> 00000000-0000-0000-0000-000000000000
+  BlendShapesEnabled: true
+  BlendNormals: false
+  BlendShapes:
+    {}
 - !<SceneObject/7aa85bd8-d423-42cd-b190-473711e94929>
   PrefabRemaps:
     []
@@ -1649,6 +1722,21 @@
     - !<own> dcc36a33-e23d-48f3-8e96-f9c9fd3cd030
   Components:
     []
+- !<SceneObject/8392127e-210d-47cc-a5a6-455d78fbe8dd>
+  PrefabRemaps:
+    []
+  Name: 3D Body Tracking
+  Enabled: true
+  Layers: 1
+  LocalTransform: !<TransformEntity>
+    Position: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Scale: {x: 1.000000, y: 1.000000, z: 1.000000}
+    HasSegmentScaleCompensation: false
+  Children:
+    - !<own> 0eec444a-ad12-4847-8d16-7e625d02b815
+  Components:
+    - !<own> e5c143ef-d83a-421a-b6d2-27f325aeee0a
 - !<SceneObject/83ef588c-5040-4344-b15f-0554c739da0b>
   PrefabRemaps:
     []
@@ -1801,32 +1889,6 @@
     - !<own> e9454e66-5d09-4a8a-bcd7-dea762326a48
   Components:
     []
-- !<ScriptComponent/96574d61-16e9-4528-b32b-4128f869ab36>
-  PrefabRemaps:
-    []
-  Name: MagicPowersSpellSelectorUI
-  Enabled: true
-  ScriptAsset: !<reference> 7af795f8-2895-4989-b448-87622f5e0785
-  ScriptInputsDefault:
-    buttonSizeCm: true
-    gapCm: true
-    paddingCm: true
-    captionColor: true
-    dimmedOpacity: true
-    showCaption: true
-  ScriptTypesDefault:
-    {}
-  ScriptInputs:
-    "":
-      buttonSizeCm: 3.600000
-      gapCm: 0.700000
-      paddingCm: 0.900000
-      captionColor: !<Vec4> {x: 1.000000, y: 0.900000, z: 0.600000, w: 1.000000}
-      dimmedOpacity: 0.350000
-      showCaption: true
-  ScriptTypes:
-    "":
-      {}
 - !<SceneObject/988c408a-99dc-47e6-b7c4-efbf4bf8dc3c>
   PrefabRemaps:
     []
@@ -1842,6 +1904,24 @@
     - !<own> a4de4ce7-f468-4966-8a06-e29eea60c023
   Components:
     []
+- !<ScriptComponent/99d9ea36-1f64-475d-b92e-6818f063799d>
+  PrefabRemaps:
+    []
+  Name: MagicPowersBodyTarget
+  Enabled: true
+  ScriptAsset: !<reference> 9d161ab6-9861-4b9c-8fde-39e5d8639dec
+  ScriptInputsDefault:
+    aimSizeScale: true
+    alwaysShowBody: true
+  ScriptTypesDefault:
+    {}
+  ScriptInputs:
+    "":
+      aimSizeScale: 1.150000
+      alwaysShowBody: false
+  ScriptTypes:
+    "":
+      {}
 - !<ScriptComponent/9a006457-61cb-4732-97b0-09c3c831743e>
   PrefabRemaps:
     []
@@ -2527,21 +2607,6 @@
     - !<own> bbcbfc17-8d65-4333-bce1-6f7239f690b8
   Components:
     []
-- !<SceneObject/d804f266-c9a5-4e72-9ef9-a47a50052cf6>
-  PrefabRemaps:
-    []
-  Name: UI
-  Enabled: true
-  Layers: 1
-  LocalTransform: !<TransformEntity>
-    Position: {x: 0.000000, y: 0.000000, z: 0.000000}
-    Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
-    Scale: {x: 1.000000, y: 1.000000, z: 1.000000}
-    HasSegmentScaleCompensation: false
-  Children:
-    - !<own> 125e4959-9be2-45b3-9799-a95c0e0ed97f
-  Components:
-    []
 - !<SceneObject/d9071294-12e8-425f-98f1-bf308a02639e>
   PrefabRemaps:
     []
@@ -2610,36 +2675,41 @@
   ScriptAsset: !<reference> 42c07ec3-5ef8-4dc5-93f2-00776ae2cec9
   ScriptInputsDefault:
     defaultPower: true
+    orbChargeSec: true
+    castThrustSpeed: true
+    castRangeCm: true
+    castOnPeople: true
     selectorHeightCm: true
     selectorHideDelaySec: true
-    selectorFollowRate: true
+    rememberProgress: true
     editorKeyboardShortcuts: true
     mockCyclePowers: true
-    mockCycleSec: true
     debugLogging: true
   ScriptTypesDefault:
     {}
   ScriptInputs:
     "":
       gestureRecognizer: !<MappingBased.AssignableType_1> 9a006457-61cb-4732-97b0-09c3c831743e
-      spellSelector: !<MappingBased.AssignableType_2> 96574d61-16e9-4528-b32b-4128f869ab36
-      fireballPower: !<MappingBased.AssignableType_3> 549d8a78-8399-4e0c-848f-34b224774a1b
-      lightningPower: !<MappingBased.AssignableType_4> e4a392bc-150a-47c7-9459-8cbbdea68c92
-      energyPower: !<MappingBased.AssignableType_5> 1b26b632-bb56-440a-95a2-d6ea7fbbcdfe
-      icePower: !<MappingBased.AssignableType_6> ffc30b8f-62e9-4745-911f-1704be438eb1
-      telekinesisPower: !<MappingBased.AssignableType_7> 6d26ed85-544a-40c9-9d0f-dc1dc1a4d092
-      portalPower: !<MappingBased.AssignableType_8> 76833931-a3e3-46df-b1c9-5721437ab22b
+      fireballPower: !<MappingBased.AssignableType_2> 549d8a78-8399-4e0c-848f-34b224774a1b
+      lightningPower: !<MappingBased.AssignableType_3> e4a392bc-150a-47c7-9459-8cbbdea68c92
+      energyPower: !<MappingBased.AssignableType_4> 1b26b632-bb56-440a-95a2-d6ea7fbbcdfe
+      icePower: !<MappingBased.AssignableType_5> ffc30b8f-62e9-4745-911f-1704be438eb1
+      telekinesisPower: !<MappingBased.AssignableType_6> 6d26ed85-544a-40c9-9d0f-dc1dc1a4d092
+      portalPower: !<MappingBased.AssignableType_7> 76833931-a3e3-46df-b1c9-5721437ab22b
       glowMaterial: !<reference.Material> a25c48c1-68a6-4336-88ce-1697dd975e6a
       solidMaterial: !<reference.Material> ec00a540-10c3-4957-a542-47a12129c27e
       sphereMesh: !<reference.RenderMesh> 8cb0d712-7455-4549-bd2a-7e2e98b1312a
       effectsRoot: !<reference.SceneObject> 1aeb0ce4-ac91-4412-83fc-c08e366de490
       defaultPower: !<float> 0.000000
+      orbChargeSec: 1.300000
+      castThrustSpeed: !<float> 90.000000
+      castRangeCm: !<float> 600.000000
+      castOnPeople: true
       selectorHeightCm: !<float> 13.000000
       selectorHideDelaySec: 0.700000
-      selectorFollowRate: !<float> 10.000000
+      rememberProgress: true
       editorKeyboardShortcuts: true
       mockCyclePowers: true
-      mockCycleSec: !<float> 9.000000
       debugLogging: false
   ScriptTypes:
     "":
@@ -2808,6 +2878,61 @@
     InvertRotation: false
   SurfaceOptions: !<SurfaceOptions>
     EnhanceWithNativeAR: false
+- !<ObjectTracking3D/e5c143ef-d83a-421a-b6d2-27f325aeee0a>
+  PrefabRemaps:
+    []
+  Name: Object Tracking 3D
+  Enabled: true
+  ObjectIndex: 0
+  TrackingMode: ProportionsAndPose
+  TrackPosition: true
+  TrackingAsset: !<reference> 63be9d99-c596-419e-b8e6-186aac19a3d7
+  AttachmentLabels:
+    - Hips
+    - Spine
+    - Spine1
+    - Spine2
+    - Neck
+    - Head
+    - LeftShoulder
+    - LeftArm
+    - LeftForeArm
+    - LeftHand
+    - RightShoulder
+    - RightArm
+    - RightForeArm
+    - RightHand
+    - LeftUpLeg
+    - LeftLeg
+    - LeftFoot
+    - LeftToeBase
+    - RightUpLeg
+    - RightLeg
+    - RightFoot
+    - RightToeBase
+  AttachedObjects:
+    - !<reference> 00000000-0000-0000-0000-000000000000
+    - !<reference> 00000000-0000-0000-0000-000000000000
+    - !<reference> 00000000-0000-0000-0000-000000000000
+    - !<reference> 00000000-0000-0000-0000-000000000000
+    - !<reference> 00000000-0000-0000-0000-000000000000
+    - !<reference> 00000000-0000-0000-0000-000000000000
+    - !<reference> 00000000-0000-0000-0000-000000000000
+    - !<reference> 00000000-0000-0000-0000-000000000000
+    - !<reference> 00000000-0000-0000-0000-000000000000
+    - !<reference> 00000000-0000-0000-0000-000000000000
+    - !<reference> 00000000-0000-0000-0000-000000000000
+    - !<reference> 00000000-0000-0000-0000-000000000000
+    - !<reference> 00000000-0000-0000-0000-000000000000
+    - !<reference> 00000000-0000-0000-0000-000000000000
+    - !<reference> 00000000-0000-0000-0000-000000000000
+    - !<reference> 00000000-0000-0000-0000-000000000000
+    - !<reference> 00000000-0000-0000-0000-000000000000
+    - !<reference> 00000000-0000-0000-0000-000000000000
+    - !<reference> 00000000-0000-0000-0000-000000000000
+    - !<reference> 00000000-0000-0000-0000-000000000000
+    - !<reference> 00000000-0000-0000-0000-000000000000
+    - !<reference> 00000000-0000-0000-0000-000000000000
 - !<SceneObject/e76a5053-8f30-4cda-9cd1-def2036e3255>
   PrefabRemaps:
     []
@@ -3116,20 +3241,52 @@
 - !<ScriptComponent/ffc30b8f-62e9-4745-911f-1704be438eb1>
   PrefabRemaps:
     []
-  Name: MagicPowersStubPower
+  Name: MagicPowersIcePower
   Enabled: true
-  ScriptAsset: !<reference> 29dd1e24-e25d-463a-918d-dd3157b05d0e
+  ScriptAsset: !<reference> 75b68d2c-dfc6-4f84-8dd9-bb53e3ee4312
   ScriptInputsDefault:
-    powerIndex: true
-    color: true
-    glowSizeCm: true
+    sphereGrowSec: true
+    minSphereToShoot: true
+    fastOpenRate: true
+    shardSpeedMin: true
+    shardSpeedMax: true
+    shardCountMin: true
+    shardCountMax: true
+    spreadDeg: true
+    shardGravity: true
+    maxRangeCm: true
+    gazeAssist: true
+    shieldEnabled: true
+    flakeCount: true
+    flakeHeightCm: true
+    shieldRadiusCm: true
+    colorCore: true
+    colorIce: true
+    colorDeep: true
+    shimmerVolume: true
   ScriptTypesDefault:
     {}
   ScriptInputs:
     "":
-      powerIndex: !<float> 3.000000
-      color: !<Vec4> {x: 0.600000, y: 0.850000, z: 1.000000, w: 1.000000}
-      glowSizeCm: !<float> 4.000000
+      sphereGrowSec: 1.200000
+      minSphereToShoot: 0.200000
+      fastOpenRate: 3.500000
+      shardSpeedMin: !<float> 450.000000
+      shardSpeedMax: !<float> 850.000000
+      shardCountMin: !<float> 4.000000
+      shardCountMax: !<float> 9.000000
+      spreadDeg: !<float> 7.000000
+      shardGravity: !<float> 25.000000
+      maxRangeCm: !<float> 900.000000
+      gazeAssist: 0.350000
+      shieldEnabled: true
+      flakeCount: !<float> 10.000000
+      flakeHeightCm: !<float> 9.000000
+      shieldRadiusCm: !<float> 13.000000
+      colorCore: !<Vec4> {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+      colorIce: !<Vec4> {x: 0.620000, y: 0.860000, z: 1.000000, w: 1.000000}
+      colorDeep: !<Vec4> {x: 0.320000, y: 0.580000, z: 1.000000, w: 1.000000}
+      shimmerVolume: 0.400000
   ScriptTypes:
     "":
       {}

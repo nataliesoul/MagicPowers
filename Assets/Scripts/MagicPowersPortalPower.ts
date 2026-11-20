@@ -12,13 +12,14 @@
  * Gesture map:  index finger traces a circle → a portal bursts open at the circle, facing the user
  *               both open palms near the portal: spreading them expands it, closing them shrinks it
  *               hands together (fast or < closeDistanceCm) → the portal collapses
+ *               two-hand orb cast at a wall or floor → the portal opens on that surface
  *
  * Why no stencil: the interior is kept inside the rim geometrically (coplanar disc + a shallow parallax
  * well whose layers shrink faster than perspective offsets them), so it needs no stencil buffer — the
  * Specs default render target has none, and a failed stencil test would silently hide the interior.
  */
 
-import { GestureEvent, GestureType, HandPose, MagicPower, PowerId, TwoHandState } from "./MagicPowersTypes"
+import { CastImpact, GestureEvent, GestureType, HandPose, MagicPower, PowerId, TwoHandState } from "./MagicPowersTypes"
 import {
   ParticlePool,
   QuadBatch,
@@ -303,6 +304,18 @@ export class MagicPowersPortalPower extends MagicPower {
       default:
         break
     }
+  }
+
+  /** The two-hand orb reached a surface: the portal opens on it, flush with the wall or floor. */
+  onCastImpact(hit: CastImpact): boolean {
+    if (!this.built || !this.isActive) return false
+    this.open(hit.position.add(hit.normal.uniformScale(1.5)), hit.normal, lerp(14, 30, hit.power))
+    return true
+  }
+
+  /** While both hands are resizing an open portal they are not free to summon an orb. */
+  get claimsTwoHands(): boolean {
+    return this.state === "open" && this.engaged > 0.3
   }
 
   private open(at: vec3, normal: vec3, traceRadius: number): void {

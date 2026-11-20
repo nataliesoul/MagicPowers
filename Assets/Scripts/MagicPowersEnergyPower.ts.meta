@@ -31,18 +31,8 @@
     colorBody: false
     colorCore: false
     colorShell: false
-    compressBrightness: false
-    humVolume: false
-    launchSpeed: false
-    maxRadiusCm: false
-    maxRangeCm: false
-    minRadiusCm: false
-    radiusPerDistance: false
-    shellParticles: false
     shieldEnabled: false
     shieldRadiusCm: false
-    spinSpeed: false
-    waveGrowth: false
   ScriptTypesHidden:
     {}
   ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
@@ -52,42 +42,19 @@
   Attachments:
     []
   DefaultScriptInputs:
-    - radiusPerDistance: 0.300000
-      minRadiusCm: !<float> 3.000000
-      maxRadiusCm: !<float> 15.000000
-      compressBrightness: 1.200000
-      spinSpeed: 1.800000
-      shellParticles: !<float> 40.000000
-      launchSpeed: !<float> 420.000000
-      waveGrowth: 1.500000
-      maxRangeCm: !<float> 800.000000
-      shieldEnabled: true
+    - shieldEnabled: true
       shieldRadiusCm: !<float> 14.000000
       colorCore: !<Vec4> {x: 1.000000, y: 0.850000, z: 1.000000, w: 1.000000}
       colorBody: !<Vec4> {x: 0.620000, y: 0.250000, z: 1.000000, w: 1.000000}
       colorShell: !<Vec4> {x: 0.950000, y: 0.450000, z: 1.000000, w: 1.000000}
-      humVolume: 0.500000
   ScriptTypes:
     -
       {}
   InputLines:
-    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">MagicPowersEnergyPower – compress, expand and launch energy</span>"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">MagicPowersEnergyPower – energy in the palms and a raised shield</span>"}'
     - '// @ui {"widget":"separator"}'
-    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Sphere</span>"}'
-    - '// @ui {"widget":"group_start", "label":"Sphere"}'
-    - '// @input float radiusPerDistance = 0.3 {"hint":"Sphere radius as a fraction of the palm-to-palm distance", "widget":"slider", "min":0.1, "max":0.6, "step":0.01}'
-    - '// @input float minRadiusCm = 3 {"hint":"Smallest sphere radius (cm) when the hands are fully compressed", "widget":"slider", "min":1, "max":10, "step":0.5}'
-    - '// @input float maxRadiusCm = 15 {"hint":"Largest sphere radius (cm) before the energy stretches into a beam", "widget":"slider", "min":6, "max":30, "step":0.5}'
-    - '// @input float compressBrightness = 1.2 {"hint":"Extra brightness gained while compressing (hands moving together)", "widget":"slider", "min":0, "max":3, "step":0.1}'
-    - '// @input float spinSpeed = 1.8 {"hint":"Base rotation speed of the particle shell (rad/s); speeds up as the sphere compresses", "widget":"slider", "min":0.2, "max":8, "step":0.1}'
-    - '// @input float shellParticles = 40 {"hint":"Particles orbiting the sphere", "widget":"slider", "min":8, "max":80, "step":1}'
-    - '// @ui {"widget":"group_end"}'
-    - '// @ui {"widget":"separator"}'
-    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Launch &amp; shield</span>"}'
-    - '// @ui {"widget":"group_start", "label":"Launch & shield"}'
-    - '// @input float launchSpeed = 420 {"hint":"Energy wave speed (cm/s)", "widget":"slider", "min":100, "max":1200, "step":10}'
-    - '// @input float waveGrowth = 1.5 {"hint":"How much the wave grows per second of flight (multiplier)", "widget":"slider", "min":1, "max":3, "step":0.05}'
-    - '// @input float maxRangeCm = 800 {"hint":"Distance (cm) after which an un-hit wave dissipates", "widget":"slider", "min":100, "max":2000, "step":10}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Shield</span>"}'
+    - '// @ui {"widget":"group_start", "label":"Shield"}'
     - '// @input bool shieldEnabled = true {"hint":"Show an energy shield in front of a single open palm facing away from you"}'
     - '// @input float shieldRadiusCm = 14 {"hint":"Shield radius (cm)", "widget":"slider", "min":5, "max":40, "step":0.5}'
     - '// @ui {"widget":"group_end"}'
@@ -95,7 +62,6 @@
     - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Look</span>"}'
     - '// @ui {"widget":"group_start", "label":"Look"}'
     - '// @input vec4 colorCore = "{1.0, 0.85, 1.0, 1.0}" {"hint":"Bright core colour", "widget":"color"}'
-    - '// @input vec4 colorBody = "{0.62, 0.25, 1.0, 1.0}" {"hint":"Sphere body colour", "widget":"color"}'
-    - '// @input vec4 colorShell = "{0.95, 0.45, 1.0, 1.0}" {"hint":"Shell particle / shield colour", "widget":"color"}'
-    - '// @input float humVolume = 0.5 {"hint":"Volume of the energy hum while a sphere is held", "widget":"slider", "min":0, "max":1, "step":0.05}'
+    - '// @input vec4 colorBody = "{0.62, 0.25, 1.0, 1.0}" {"hint":"Shield body colour", "widget":"color"}'
+    - '// @input vec4 colorShell = "{0.95, 0.45, 1.0, 1.0}" {"hint":"Palm glow / shield rim colour", "widget":"color"}'
     - '// @ui {"widget":"group_end"}'

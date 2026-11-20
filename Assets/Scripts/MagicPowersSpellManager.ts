@@ -42,6 +42,11 @@ export class SpellManager {
     return this.powers.has(id)
   }
 
+  /** The power registered for an element (active or not). */
+  get(id: PowerId): MagicPower | null {
+    return this.powers.get(id) ?? null
+  }
+
   get activePowerId(): PowerId | null {
     return this.activeId
   }

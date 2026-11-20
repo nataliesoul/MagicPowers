@@ -21,6 +21,70 @@ export const POWER_COUNT = 6
 
 export const POWER_NAMES: string[] = ["Fireball", "Lightning", "Energy Sphere", "Ice", "Telekinesis", "Portal"]
 
+/** Short element names used in captions and on the element wheel (index = PowerId). */
+export const ELEMENT_NAMES: string[] = ["Fire", "Lightning", "Energy", "Ice", "Gravity", "Portal"]
+
+/** Colours an element uses for its two-hand orb, its flight and the mark it leaves on the world. */
+export interface ElementPalette {
+  core: vec4
+  main: vec4
+  accent: vec4
+}
+
+/** index = PowerId */
+export const ELEMENT_PALETTES: ElementPalette[] = [
+  { core: new vec4(1.0, 0.95, 0.65, 1), main: new vec4(1.0, 0.45, 0.08, 1), accent: new vec4(1.0, 0.25, 0.04, 1) },
+  { core: new vec4(1.0, 1.0, 1.0, 1), main: new vec4(0.4, 0.85, 1.0, 1), accent: new vec4(0.25, 0.5, 1.0, 1) },
+  { core: new vec4(1.0, 0.85, 1.0, 1), main: new vec4(0.62, 0.25, 1.0, 1), accent: new vec4(0.95, 0.45, 1.0, 1) },
+  { core: new vec4(1.0, 1.0, 1.0, 1), main: new vec4(0.62, 0.86, 1.0, 1), accent: new vec4(0.32, 0.58, 1.0, 1) },
+  { core: new vec4(0.8, 1.0, 0.9, 1), main: new vec4(0.35, 1.0, 0.65, 1), accent: new vec4(0.15, 0.7, 0.5, 1) },
+  { core: new vec4(1.0, 0.97, 0.85, 1), main: new vec4(1.0, 0.82, 0.35, 1), accent: new vec4(0.85, 0.25, 1.0, 1) },
+]
+
+/** What a real surface is, judged from its normal — world effects adapt to it. */
+export type SurfaceKind = "floor" | "wall" | "ceiling" | "person"
+
+/** A two-hand cast that reached something real. */
+export interface CastImpact {
+  element: PowerId
+  position: vec3
+  normal: vec3
+  /** 0..1 charge the orb was released with. */
+  power: number
+  surface: SurfaceKind
+}
+
+/** Everything the spellbook tracks: six imprints, four reactions (index = bit in the saved mask). */
+export type SpellId = "ignite" | "storm" | "sigil" | "frost" | "gravity" | "gateway" | "steam" | "shatter" | "firestorm" | "amplify"
+export const SPELL_ORDER: SpellId[] = ["ignite", "storm", "sigil", "frost", "gravity", "gateway", "steam", "shatter", "firestorm", "amplify"]
+
+/** The lasting-magic system, as powers see it. */
+export interface WorldMagicApi {
+  /** Leave a lasting elemental effect on a real surface (or react with one already there). */
+  imprint(element: PowerId, position: vec3, normal: vec3, power: number): void
+  /** Nearest live effect of an element within range (cm), or null. */
+  nearest(element: PowerId, from: vec3, rangeCm: number): { position: vec3; normal: vec3; radius: number } | null
+}
+
+/** A tracked person magic can be cast on (implemented by MagicPowersBodyTarget on the Body Mesh object). */
+export interface BodyAnchor {
+  isTracking(): boolean
+  /** World positions of the tracked joints this frame (unordered; empty when nobody is tracked). */
+  jointPositions(): vec3[]
+  /** Additive tint for the body mesh; rgb already scaled by intensity. Zero hides the mesh. */
+  setAura(r: number, g: number, b: number): void
+  /** Ray against the tracked body. Null when the ray misses or nobody is tracked. */
+  raycast(origin: vec3, dir: vec3, maxDist: number): { position: vec3; normal: vec3; distance: number } | null
+}
+
+/** Live state of the orb held between the hands (owned by the caster, read by powers). */
+export interface OrbState {
+  presence: number
+  charge: number
+  centre: vec3
+  radius: number
+}
+
 export type HandSide = "left" | "right"
 
 export enum GestureType {
@@ -116,6 +180,10 @@ export interface EffectsContext {
   camera: Transform
   /** Parent for every runtime-created effect object. */
   effectsRoot: SceneObject
+  /** Lasting magic left on real surfaces. */
+  world: WorldMagicApi
+  /** The orb currently held between the hands. */
+  orb: OrbState
 }
 
 /**
@@ -152,6 +220,19 @@ export abstract class MagicPower extends BaseScriptComponent {
     if (!this.active) return
     this.active = false
     this.onDeactivate()
+  }
+
+  /**
+   * A two-hand cast of this element landed. Return true when the power answers it itself
+   * (Portal opens on the surface); false leaves the standard lasting world effect.
+   */
+  onCastImpact(hit: CastImpact): boolean {
+    return false
+  }
+
+  /** True while the power is using both hands itself, so the two-hand orb must not form. */
+  get claimsTwoHands(): boolean {
+    return false
   }
 
   /** Called when this power becomes the active spell. Build/enable visuals here. */

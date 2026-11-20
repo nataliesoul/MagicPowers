@@ -214,7 +214,11 @@ export class MagicPowersLightningPower extends MagicPower {
       for (let i = 0; i < 6; i++) this.spawnSpark(from, 1)
     }
     if (this.probe && this.probe.isAvailable) {
-      this.probe.probe(from, fallbackEnd, (hit) => spawn(hit ? hit.position : fallbackEnd))
+      this.probe.probe(from, fallbackEnd, (hit) => {
+        spawn(hit ? hit.position : fallbackEnd)
+        // a bolt that finds a real surface leaves it crackling
+        if (hit) ctx.world.imprint(PowerId.Lightning, hit.position, hit.normal, 0.4)
+      })
     } else spawn(fallbackEnd)
   }
 
@@ -261,7 +265,9 @@ export class MagicPowersLightningPower extends MagicPower {
     const inRange = bothVisible && two.distance < this.arcMaxDistanceCm && two.distance > 4
     const closeness = inRange ? clamp01(1 - two.distance / this.arcMaxDistanceCm) : 0
     const conf = Math.min(left.confidence, right.confidence)
-    this.arcIntensity = approach(this.arcIntensity, inRange ? (0.25 + 0.75 * closeness) * conf : 0, inRange ? 10 : 6, dt)
+    // The two-hand orb draws its own arcs from each palm, so the palm-to-palm arcs give way to it.
+    const free = 1 - this.ctx.orb.presence
+    this.arcIntensity = approach(this.arcIntensity, inRange ? (0.25 + 0.75 * closeness) * conf * free : 0, inRange ? 10 : 6, dt)
     if (this.arcIntensity > 0.02) {
       const a = left.palmCenter.add(left.palmNormal.uniformScale(2))
       const b = right.palmCenter.add(right.palmNormal.uniformScale(2))

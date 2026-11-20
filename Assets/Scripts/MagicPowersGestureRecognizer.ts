@@ -363,7 +363,8 @@ export class MagicPowersGestureRecognizer extends BaseScriptComponent {
   // ── Editor mock → raw pose ──────────────────────────────────────────────────
 
   /**
-   * Mock timeline (one cycle): both palms facing (0–30 %), right fist charge (30–45 %), fast open +
+   * Mock timeline (one cycle): both palms facing (0–30 %, with a two-hand thrust at 20–25 % that
+   * casts the orb), right fist charge (30–45 %), fast open +
    * push (45–60 %), right pointing (60–75 %), both open + right push (75–100 %).
    * Left hand palm-up is toggled with setMockPalmUp (keyboard U in MagicPowersMain).
    */
@@ -387,7 +388,10 @@ export class MagicPowersGestureRecognizer extends BaseScriptComponent {
     let pushVel = vec3.zero()
     const isRight = pose.side === "right"
 
-    if (phase >= 0.3 && phase < 0.45) {
+    if (phase < 0.3) {
+      // both hands thrust forward together: releases the two-hand orb that has been charging
+      if (phase >= 0.2 && phase < 0.25) pushVel = look.uniformScale(220)
+    } else if (phase >= 0.3 && phase < 0.45) {
       if (isRight) openness = 0.05 // charging fist
     } else if (phase >= 0.45 && phase < 0.6) {
       if (isRight) {

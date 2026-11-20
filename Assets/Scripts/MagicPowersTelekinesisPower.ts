@@ -622,9 +622,19 @@ export class MagicPowersTelekinesisPower extends MagicPower {
         }
       } else o.settledFor = 0
     } else if (o.state === "idle") {
-      // gentle hover around the rest position
       const bob = Math.sin(this.time * 1.1 + o.seed) * 1.5
-      o.pos = approachVec(o.pos, o.restPos.add(vec3.up().uniformScale(bob)), 3, dt)
+      const well = this.ctx!.world.nearest(PowerId.Telekinesis, o.pos, 280)
+      if (well) {
+        // a gravity well cast into the room gathers the objects into a slow orbit above it
+        const basis = perpendicularBasis(well.normal)
+        const a = this.time * 0.6 + o.seed
+        const ring = basis.n1.uniformScale(Math.cos(a)).add(basis.n2.uniformScale(Math.sin(a))).uniformScale(well.radius * 0.7)
+        o.pos = approachVec(o.pos, well.position.add(well.normal.uniformScale(42 + bob * 4)).add(ring), 1.6, dt)
+        o.restPos = o.pos
+      } else {
+        // gentle hover around the rest position
+        o.pos = approachVec(o.pos, o.restPos.add(vec3.up().uniformScale(bob)), 3, dt)
+      }
     }
 
     // Rotation integration

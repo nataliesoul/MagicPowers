@@ -104,6 +104,7 @@ export class QuadBatch {
   private verts: number[]
   private count = 0
   private highWater = 0
+  private visible = true
 
   constructor(parent: SceneObject, name: string, material: Material, capacity: number) {
     this.capacity = capacity
@@ -207,6 +208,11 @@ export class QuadBatch {
 
   /** Upload the frame's quads. Unused slots are collapsed to zero-area so they never render. */
   end(): void {
+    // Nothing drawn this frame and nothing left over from the last one: skip the upload entirely.
+    if (this.count === 0 && this.highWater === 0) {
+      this.show(false)
+      return
+    }
     if (this.count < this.highWater) {
       for (let i = this.count * FLOATS_PER_QUAD; i < this.highWater * FLOATS_PER_QUAD; i++) this.verts[i] = 0
     }
@@ -215,7 +221,13 @@ export class QuadBatch {
     if (n > 0) this.builder.eraseVertices(0, n)
     this.builder.appendVerticesInterleaved(this.verts)
     if (this.builder.isValid()) this.builder.updateMesh()
-    this.rmv.enabled = this.count > 0
+    this.show(this.count > 0)
+  }
+
+  private show(on: boolean): void {
+    if (on === this.visible) return
+    this.visible = on
+    this.rmv.enabled = on
   }
 
   get activeCount(): number {
@@ -223,6 +235,7 @@ export class QuadBatch {
   }
 
   setEnabled(enabled: boolean): void {
+    this.visible = enabled
     this.rmv.enabled = enabled
   }
 
@@ -458,7 +471,160 @@ export class SurfaceProbe {
   }
 }
 
+export type CamBasis = { pos: vec3; right: vec3; up: vec3; look: vec3 }
+
 /** Camera basis for billboarding. `look` is the direction the camera looks along. */
-export function cameraBasis(cam: Transform): { pos: vec3; right: vec3; up: vec3; look: vec3 } {
+export function cameraBasis(cam: Transform): CamBasis {
   return { pos: cam.getWorldPosition(), right: cam.right, up: cam.up, look: cam.back }
+}
+
+/** `axis`-aligned billboard side vector: camera-right flattened onto the plane perpendicular to `axis`. */
+export function sideAxisFor(axis: vec3, cam: CamBasis): vec3 {
+  let side = cam.right.sub(axis.uniformScale(cam.right.dot(axis)))
+  if (side.length < 1e-3) side = cam.up.sub(axis.uniformScale(cam.up.dot(axis)))
+  return side.normalize()
+}
+
+/** Point on a quadratic Bezier. */
+export function bezier(a: vec3, b: vec3, c: vec3, t: number): vec3 {
+  const u = 1 - t
+  return a.uniformScale(u * u).add(b.uniformScale(2 * u * t)).add(c.uniformScale(t * t))
+}
+
+// ─── World-space captions ────────────────────────────────────────────────────
+
+/**
+ * A line of world-space text that fades in and out and always faces the wearer. Writes to the Text
+ * component are guarded, so an unchanged caption costs nothing per frame.
+ */
+export class FadingLabel {
+  readonly obj: SceneObject
+  private text: Text
+  private color: vec4
+  private shownText = ""
+  private shownAlpha = -1
+  private shownSize = -1
+
+  constructor(parent: SceneObject, name: string, size: number, color: vec4) {
+    this.obj = global.scene.createSceneObject(name)
+    this.obj.setParent(parent)
+    this.color = color
+    const t = this.obj.createComponent("Component.Text") as Text
+    t.text = ""
+    t.horizontalAlignment = HorizontalAlignment.Center
+    t.verticalAlignment = VerticalAlignment.Center
+    t.horizontalOverflow = HorizontalOverflow.Overflow
+    t.verticalOverflow = VerticalOverflow.Overflow
+    t.outlineSettings.enabled = true
+    t.outlineSettings.size = 0.12
+    this.text = t
+    this.setSize(size)
+    this.setAlpha(0)
+  }
+
+  setText(value: string): void {
+    if (value === this.shownText) return
+    this.shownText = value
+    this.text.text = value
+  }
+
+  setSize(size: number): void {
+    const s = Math.round(size)
+    if (s === this.shownSize) return
+    this.shownSize = s
+    this.text.size = s
+  }
+
+  setColor(color: vec4): void {
+    this.color = color
+    this.shownAlpha = -1
+  }
+
+  setAlpha(alpha: number): void {
+    const a = Math.round(clamp01(alpha) * 40) / 40
+    if (a === this.shownAlpha) return
+    this.shownAlpha = a
+    this.obj.enabled = a > 0.02
+    this.text.textFill.color = new vec4(this.color.x, this.color.y, this.color.z, a)
+    this.text.outlineSettings.fill.color = new vec4(0, 0, 0, 0.6 * a)
+  }
+
+  /** Put the label at a world position, turned to face the camera. */
+  place(pos: vec3, cam: CamBasis): void {
+    const t = this.obj.getTransform()
+    t.setWorldPosition(pos)
+    const toCam = cam.pos.sub(pos)
+    if (toCam.length > 1e-3) t.setWorldRotation(quat.lookAt(toCam.normalize(), vec3.up()))
+  }
+}
+
+// ─── FxCanvas: the always-on batches shared by world magic, the two-hand orb and the guide ───
+
+/**
+ * One set of additive batches + particle pools that stays alive whatever power is selected, so magic
+ * left in the room keeps burning after the wearer switches element. Everything world-anchored draws
+ * here: ten draw calls at most, and a batch with nothing in it costs nothing (see QuadBatch.end).
+ */
+export class FxCanvas {
+  readonly root: SceneObject
+  readonly glows: QuadBatch
+  readonly motes: QuadBatch
+  readonly sparks: QuadBatch
+  readonly flames: QuadBatch
+  readonly rings: QuadBatch
+  readonly crystals: QuadBatch
+  readonly flakes: QuadBatch
+  readonly stars: QuadBatch
+  readonly arcGlow: QuadBatch
+  readonly arcCore: QuadBatch
+  /** Soft round particles: embers, mist, steam, energy motes. */
+  readonly motePool = new ParticlePool(260)
+  /** Sharp streaks: sparks. */
+  readonly sparkPool = new ParticlePool(160)
+  /** Flying crystal shards. */
+  readonly shardPool = new ParticlePool(60)
+  /** Twinkling stars. */
+  readonly starPool = new ParticlePool(120)
+  readonly scratch: vec3[] = []
+  private all: QuadBatch[]
+
+  constructor(parent: SceneObject, glowMaterial: Material, tex: { glow: Texture; flame: Texture; spark: Texture; ring: Texture; beam: Texture; snowflake: Texture; crystal: Texture; star: Texture }) {
+    this.root = global.scene.createSceneObject("WorldMagicVFX")
+    this.root.setParent(parent)
+    const white = new vec4(1, 1, 1, 1)
+    const make = (name: string, t: Texture, cap: number) => new QuadBatch(this.root, name, cloneGlowMaterial(glowMaterial, t, white), cap)
+    this.glows = make("WGlows", tex.glow, 150)
+    this.motes = make("WMotes", tex.glow, 300)
+    this.sparks = make("WSparks", tex.spark, 180)
+    this.flames = make("WFlames", tex.flame, 420)
+    this.rings = make("WRings", tex.ring, 80)
+    this.crystals = make("WCrystals", tex.crystal, 200)
+    this.flakes = make("WFlakes", tex.snowflake, 90)
+    this.stars = make("WStars", tex.star, 260)
+    this.arcGlow = make("WArcGlow", tex.beam, 300)
+    this.arcCore = make("WArcCore", tex.beam, 300)
+    this.all = [this.glows, this.motes, this.sparks, this.flames, this.rings, this.crystals, this.flakes, this.stars, this.arcGlow, this.arcCore]
+  }
+
+  begin(): void {
+    for (const b of this.all) b.begin()
+  }
+
+  /** Jagged arc a→b drawn as glow + core ribbons. */
+  arc(a: vec3, b: vec3, segments: number, amplitude: number, seed: number, time: number, glowW: number, coreW: number, glowCol: vec4, coreCol: vec4, camPos: vec3): void {
+    buildArc(a, b, segments, amplitude, seed, time, 26, this.scratch)
+    drawArc(this.scratch, this.arcGlow, this.arcCore, glowW, coreW, glowCol, coreCol, camPos)
+  }
+
+  end(dt: number, time: number, cam: CamBasis): void {
+    this.motePool.update(dt, time)
+    this.sparkPool.update(dt, time)
+    this.shardPool.update(dt, time)
+    this.starPool.update(dt, time)
+    this.motePool.draw(this.motes, cam.right, cam.up, 1)
+    this.sparkPool.draw(this.sparks, cam.right, cam.up, 1)
+    this.shardPool.draw(this.crystals, cam.right, cam.up, 1)
+    this.starPool.draw(this.stars, cam.right, cam.up, 1)
+    for (const b of this.all) b.end()
+  }
 }

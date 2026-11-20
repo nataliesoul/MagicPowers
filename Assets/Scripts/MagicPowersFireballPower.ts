@@ -9,7 +9,8 @@
  *
  * Gesture map:  open palm → flame  ·  fist → charge (grows/pulses, sparks, rising SFX)
  *               fast open or push while charged → launch  ·  slow open → fizzle
- *               both palms facing (open) → large swirling fire sphere between the hands
+ *               both palms facing → the shared two-hand orb (MagicPowersCaster) takes over;
+ *               a thrown fireball that meets a real surface sets it alight (MagicPowersWorldMagic)
  */
 
 import { GestureEvent, GestureType, HandPose, HandSide, MagicPower, PowerId, TwoHandState } from "./MagicPowersTypes"
@@ -344,7 +345,12 @@ export class MagicPowersFireballPower extends MagicPower {
     if (!isNull(f.host)) f.host.destroy()
   }
 
-  private burst(pos: vec3, normal: vec3, charge: number): void {
+  /** `onSurface` = the fireball met something real: it sets that surface alight instead of just bursting. */
+  private burst(pos: vec3, normal: vec3, charge: number, onSurface: boolean): void {
+    if (onSurface) {
+      this.ctx!.world.imprint(PowerId.Fireball, pos, normal, charge)
+      return
+    }
     const size = lerp(14, 30, charge)
     this.impacts.push({ pos, normal, age: 0, size })
     playOneShotAt(this.ctx!.effectsRoot, MagicSfx.fireImpact, pos, 0.9)
@@ -402,9 +408,8 @@ export class MagicPowersFireballPower extends MagicPower {
     const cam = cameraBasis(this.ctx.camera)
     const poses: Record<HandSide, HandPose> = { left, right }
 
-    // Two-hand fire sphere: both open palms facing each other.
-    const wantTwo = two.palmsFacing && left.isOpen && right.isOpen && left.confidence > 0.5 && right.confidence > 0.5
-    this.twoHand = approach(this.twoHand, wantTwo ? 1 : 0, 6, dt)
+    // While the two-hand orb (MagicPowersCaster) is held, the palm flames die down to let it read.
+    this.twoHand = this.ctx.orb.presence
 
     this.flames!.begin()
     this.glows!.begin()
@@ -416,8 +421,6 @@ export class MagicPowersFireballPower extends MagicPower {
       const pose = poses[side]
       this.updateHand(h, pose, dt, cam)
     }
-
-    if (this.twoHand > 0.01) this.drawTwoHandSphere(two, left, right, dt, cam)
 
     this.updateFireballs(dt, cam)
     this.updateImpacts(dt, cam)
@@ -518,33 +521,6 @@ export class MagicPowersFireballPower extends MagicPower {
     }
   }
 
-  private drawTwoHandSphere(two: TwoHandState, left: HandPose, right: HandPose, dt: number, cam: { pos: vec3; right: vec3; up: vec3; look: vec3 }): void {
-    const amt = this.twoHand * Math.min(left.confidence, right.confidence)
-    if (amt <= 0.01) return
-    const centre = two.midpoint
-    const radius = Math.max(4, Math.min(16, two.distance * 0.34)) * amt
-    // Burning sphere: tongues sit around the horizontal equator and rise upward while swirling
-    // around the vertical axis (a flat ring of fire would look edge-on from most angles).
-    const basis = perpendicularBasis(vec3.up())
-    const tongues = 12
-    for (let i = 0; i < tongues; i++) {
-      const a = this.time * 2.2 + i * (Math.PI * 2 / tongues)
-      const n = flickerNoise(i + 300, 5, this.time, 10)
-      const lift = 0.15 + 0.35 * (0.5 + 0.5 * Math.sin(a * 2 + this.time))
-      const p = centre.add(basis.n1.uniformScale(Math.cos(a) * radius * 0.85)).add(basis.n2.uniformScale(Math.sin(a) * radius * 0.85)).add(vec3.up().uniformScale(radius * lift))
-      const outward = p.sub(centre).normalize()
-      const upAxis = outward.uniformScale(0.3).add(vec3.up().uniformScale(0.7)).normalize()
-      const sideAxis = cam.right.sub(upAxis.uniformScale(cam.right.dot(upAxis))).normalize()
-      const h = radius * (0.9 + 0.4 * n)
-      this.flames!.quad(p.add(upAxis.uniformScale(h * 0.4)), sideAxis, upAxis, h * 0.25, h * 0.5, tint(i % 3 === 0 ? this.colorCore : this.colorFlame, 1, 0.75 * amt))
-    }
-    this.glows!.quad(centre, cam.right, cam.up, radius * 2.4, radius * 2.4, tint(this.colorFlame, 1, 0.6 * amt))
-    this.glows!.quad(centre, cam.right, cam.up, radius * 1.2, radius * 1.2, tint(this.colorCore, 1, 0.8 * amt))
-    if (Math.random() < 60 * amt * dt) this.spawnEmber(centre.add(randomUnitVector().uniformScale(radius)), 1.2, randomUnitVector().uniformScale(25))
-    this.hands!.left.loop.setLevel(amt)
-    this.hands!.left.loop.playIfSilent(-1)
-  }
-
   private updateFireballs(dt: number, cam: { pos: vec3; right: vec3; up: vec3; look: vec3 }): void {
     for (let i = this.fireballs.length - 1; i >= 0; i--) {
       const f = this.fireballs[i]
@@ -582,7 +558,8 @@ export class MagicPowersFireballPower extends MagicPower {
       // Impact: surface hit (WorldQuery), ground fallback, or range
       const camY = cam.pos.y
       if (f.travelled >= this.maxRangeCm || f.pos.y < camY - 170) {
-        this.burst(f.pos, vec3.up(), f.charge)
+        // Out of range it bursts in the air; with no world mesh (editor) the stand-in floor catches fire.
+        this.burst(f.pos, vec3.up(), f.charge, f.travelled < this.maxRangeCm && !(this.probe && this.probe.isAvailable))
         f.hit = true
         continue
       }
@@ -592,7 +569,7 @@ export class MagicPowersFireballPower extends MagicPower {
         this.probe.probe(prev, ahead, (hit) => {
           f.probing = false
           if (hit && !f.hit) {
-            this.burst(hit.position, hit.normal, f.charge)
+            this.burst(hit.position, hit.normal, f.charge, true)
             f.hit = true
           }
         })
