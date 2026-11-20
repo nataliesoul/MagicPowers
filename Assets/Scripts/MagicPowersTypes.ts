@@ -66,14 +66,19 @@ export interface WorldMagicApi {
   nearest(element: PowerId, from: vec3, rangeCm: number): { position: vec3; normal: vec3; radius: number } | null
 }
 
-/** A tracked person magic can be cast on (implemented by MagicPowersBodyTarget on the Body Mesh object). */
+/** A person magic can be cast on (implemented by MagicPowersBodyTarget on the Body Mesh object). */
 export interface BodyAnchor {
+  /** True while a person is tracked (or the editor's stand-in is standing in). */
   isTracking(): boolean
-  /** World positions of the tracked joints this frame (unordered; empty when nobody is tracked). */
-  jointPositions(): vec3[]
+  /** True when the "person" is the editor's stand-in rather than a tracked body. */
+  readonly isMock: boolean
+  /** World positions spread over the body this frame: joints plus points along the limbs (empty when nobody is tracked). */
+  bodyPoints(): vec3[]
+  /** The limbs, as index pairs into bodyPoints() laid end to end: [a0, b0, a1, b1, …]. */
+  bodyBones(): number[]
   /** Additive tint for the body mesh; rgb already scaled by intensity. Zero hides the mesh. */
   setAura(r: number, g: number, b: number): void
-  /** Ray against the tracked body. Null when the ray misses or nobody is tracked. */
+  /** Ray against the body. Null when the ray misses or nobody is tracked. */
   raycast(origin: vec3, dir: vec3, maxDist: number): { position: vec3; normal: vec3; distance: number } | null
 }
 

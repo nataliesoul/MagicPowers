@@ -307,7 +307,9 @@ export class MagicPowersMain extends BaseScriptComponent {
     // The orb cannot form while a palm is busy with the wheel or the power itself needs both hands.
     const allowOrb = !this.wheel.isVisible && !(power && power.claimsTwoHands)
     this.caster.update(dt, rec.left, rec.right, rec.two, active, allowOrb, cam)
-    this.world.bodyHint = this.caster.aimingAtPerson ? ELEMENT_PALETTES[active].main : null
+    // A tracked person glows faintly while an orb is held, and brighter once the reticle is on them.
+    this.world.bodyHint = this.ctx.orb.presence > 0.25 ? ELEMENT_PALETTES[active].main : null
+    this.world.bodyHintStrong = this.caster.aimingAtPerson
     this.world.update(dt, cam, rec.left, rec.right)
 
     // After mastery: both palms raised and held begins a new journey.
@@ -426,9 +428,9 @@ export class MagicPowersMain extends BaseScriptComponent {
       return
     }
     const cam = cameraBasis(this.ctx.camera)
-    const joints = body.jointPositions()
+    const joints = body.bodyPoints()
     const gaze = body.raycast(cam.pos, cam.look, this.castRangeCm)
-    print(`[MagicPowersMain] Person: tracking=${body.isTracking()} joints=${joints.length} gaze=${gaze ? gaze.distance.toFixed(0) + " cm" : "miss"}`)
+    print(`[MagicPowersMain] Person: tracking=${body.isTracking()} mock=${body.isMock} points=${joints.length} first=${joints.length > 0 ? joints[0].toString() : "-"} gaze=${gaze ? gaze.distance.toFixed(0) + " cm" : "miss"}`)
     if (joints.length === 0) return
     const element = this.spells.activePowerId ?? (this.defaultPower as PowerId)
     this.onCastImpact({ element, position: gaze ? gaze.position : joints[0], normal: cam.look.uniformScale(-1), power: 0.8, surface: "person" })

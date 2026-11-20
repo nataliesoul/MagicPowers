@@ -30,6 +30,8 @@
   ScriptInputsHidden:
     aimSizeScale: false
     alwaysShowBody: false
+    editorMockBody: false
+    logTracking: false
   ScriptTypesHidden:
     {}
   ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
@@ -40,12 +42,16 @@
     []
   DefaultScriptInputs:
     - aimSizeScale: 1.150000
+      editorMockBody: true
       alwaysShowBody: false
+      logTracking: false
   ScriptTypes:
     -
       {}
   InputLines:
     - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">MagicPowersBodyTarget – cast magic on a tracked person</span>"}'
     - '// @ui {"widget":"separator"}'
-    - '// @input float aimSizeScale = 1.15 {"hint":"Multiplier on the aiming volume around each joint; raise it to make people easier to hit", "widget":"slider", "min":0.5, "max":2, "step":0.05}'
+    - '// @input float aimSizeScale = 1.35 {"hint":"Multiplier on the aiming volume around the body; raise it to make people easier to hit", "widget":"slider", "min":0.5, "max":2.5, "step":0.05}'
+    - '// @input bool editorMockBody = true {"hint":"In Lens Studio (no headset) stand a stand-in person a couple of metres ahead and to the right, so casting on people can be previewed"}'
     - '// @input bool alwaysShowBody {"hint":"Debug: keep the body mesh faintly visible whenever a person is tracked"}'
+    - '// @input bool logTracking {"hint":"Print when a person starts / stops being tracked (shows in the Lens Studio logger from the device too)"}'

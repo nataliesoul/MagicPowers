@@ -102,6 +102,8 @@ const MAX_RADIUS = 68
 const SPREAD_SEC = 1.3
 const POINTS = 22
 const STEAM = new vec4(0.85, 0.93, 1.0, 0.55)
+/** Marks the editor's stand-in person so it can be found and aimed at. */
+const MOCK_TINT = new vec4(0.6, 0.75, 1.0, 1)
 /** index = PowerId */
 const IMPRINT_SPELL: SpellId[] = ["ignite", "storm", "sigil", "frost", "gravity", "gateway"]
 
@@ -115,8 +117,12 @@ export class WorldMagic implements WorldMagicApi {
   private strikes: Strike[] = []
   private enchant: Enchant | null = null
   private body: BodyAnchor | null = null
-  /** Colour to tint a tracked person with while they are being aimed at (null = not aimed at). */
+  /** Element colour while the wearer holds an orb: a tracked person glows faintly in it ("you can cast on them"). */
   bodyHint: vec4 | null = null
+  /** True while the reticle is on the person: the glow brightens. */
+  bodyHintStrong = false
+  private hintShown = 0
+  private hintColor: vec4 = new vec4(1, 1, 1, 1)
   private bodyAuraOn = false
   private loops: LoopVoices
   private spellEvent = new Event<SpellEvent>()
@@ -870,82 +876,112 @@ export class WorldMagic implements WorldMagicApi {
 
   private updateBody(dt: number, cam: CamBasis): void {
     const body = this.body
+    if (!body) return
+    const c = this.canvas
+    const t = this.time
+    const tracked = body.isTracking()
+    const points = tracked ? body.bodyPoints() : []
+    const bones = tracked ? body.bodyBones() : []
+    const n = points.length
     const en = this.enchant
-    if (!body || !en) {
-      if (body) {
-        // No enchantment: a faint tint marks the person while the reticle is on them.
-        const hint = this.bodyHint
-        if (hint && body.isTracking()) {
-          const k = 0.16 + 0.06 * Math.sin(this.time * 5)
-          body.setAura(hint.x * k, hint.y * k, hint.z * k)
-          this.bodyAuraOn = true
-        } else if (this.bodyAuraOn) {
+
+    if (!en) {
+      // No enchantment. While the wearer holds an orb a tracked person glows faintly in its colour —
+      // "you can cast on them" — and brightens when the reticle is on them.
+      if (this.bodyHint) this.hintColor = this.bodyHint
+      const level = this.bodyHint ? (this.bodyHintStrong ? 1 : 0.6) : 0
+      this.hintShown = approach(this.hintShown, tracked ? level : 0, 6, dt)
+      const h = this.hintShown
+      if (h > 0.02) {
+        const pulse = 0.8 + 0.2 * Math.sin(t * 5)
+        const k = 0.3 * h * pulse
+        body.setAura(this.hintColor.x * k, this.hintColor.y * k, this.hintColor.z * k)
+        this.bodyAuraOn = true
+        for (let i = 0; i < n; i++) c.glows.quad(points[i], cam.right, cam.up, 6.5 * h, 6.5 * h, tint(this.hintColor, 1, 0.32 * h * pulse))
+        for (let i = 0; i + 1 < bones.length; i += 2) c.arcGlow.segment(points[bones[i]], points[bones[i + 1]], 7 * h, tint(this.hintColor, 1, 0.3 * h * pulse), cam.pos)
+      } else {
+        if (this.bodyAuraOn) {
           body.setAura(0, 0, 0)
           this.bodyAuraOn = false
+        }
+        // the editor's stand-in is always faintly marked, so it can be found
+        if (body.isMock) {
+          for (let i = 0; i < n; i++) c.glows.quad(points[i], cam.right, cam.up, 3.5, 3.5, tint(MOCK_TINT, 1, 0.22))
+          for (let i = 0; i + 1 < bones.length; i += 2) c.arcGlow.segment(points[bones[i]], points[bones[i + 1]], 2.5, tint(MOCK_TINT, 1, 0.16), cam.pos)
         }
       }
       return
     }
+
     en.age += dt
     if (en.age > en.life) en.dying = true
-    const tracked = body.isTracking()
     en.presence = approach(en.presence, en.dying || !tracked ? 0 : 1, en.dying ? 2.5 : 5, dt)
     if (en.dying && en.presence < 0.02) {
       this.enchant = null
+      this.hintShown = 0
       body.setAura(0, 0, 0)
       this.bodyAuraOn = false
       return
     }
-    const c = this.canvas
-    const t = this.time
     const I = en.presence
     const pal = en.pal
     const flick = en.element === PowerId.Fireball || en.element === PowerId.Lightning ? 0.75 + 0.25 * flickerNoise(3, en.seed, t, 14) : 0.9 + 0.1 * Math.sin(t * 3)
     const k = 0.55 * I * flick
     body.setAura(pal.main.x * k, pal.main.y * k, pal.main.z * k)
     this.bodyAuraOn = true
-    const joints = body.jointPositions()
-    const n = joints.length
     if (n === 0 || I < 0.02) return
-    let lo = joints[0]
-    let hi = joints[0]
-    for (const j of joints) {
+    let lo = points[0]
+    let hi = points[0]
+    for (const j of points) {
       if (j.y < lo.y) lo = j
       if (j.y > hi.y) hi = j
     }
     const up = vec3.up()
     const side = sideAxisFor(up, cam)
+    // A glow along every limb draws the person's own silhouette in the element's colour, whether
+    // or not the body mesh is showing; lightning also crawls along the limbs.
+    for (let i = 0; i + 1 < bones.length; i += 2) {
+      const a = points[bones[i]]
+      const b = points[bones[i + 1]]
+      c.arcGlow.segment(a, b, 11 * I, tint(pal.main, 1, 0.32 * I * flick), cam.pos)
+      c.arcCore.segment(a, b, 3 * I, tint(pal.core, 1, 0.3 * I * flick), cam.pos)
+      if (en.element === PowerId.Lightning && flickerNoise(i + 9, en.seed, t, 9) > -0.2) {
+        c.arc(a, b, 6, a.distance(b) * 0.3, en.seed + i * 3.1, t, 2.6 * I, 0.6 * I, tint(pal.main, 1, 0.75 * I), tint(pal.core, 1, I), cam.pos)
+      }
+    }
     for (let i = 0; i < n; i++) {
-      const j = joints[i]
-      c.glows.quad(j, cam.right, cam.up, 9 * I, 9 * I, tint(pal.main, 1, 0.3 * I * flick))
+      const j = points[i]
+      c.glows.quad(j, cam.right, cam.up, 10 * I, 10 * I, tint(pal.main, 1, 0.3 * I * flick))
       switch (en.element) {
         case PowerId.Fireball: {
           for (let f = 0; f < 2; f++) {
             const nz = flickerNoise(i * 2 + f, en.seed, t, 10)
-            const h = (16 + 6 * f) * (0.6 + 0.4 * (0.5 + 0.5 * nz)) * I * (en.charged ? 1.3 : 1)
-            c.flames.quad(j.add(up.uniformScale(h * 0.45)).add(side.uniformScale((f - 0.5) * 5 + nz * 1.5)), side, up, h * 0.22, h * 0.5, tint(f === 0 ? pal.core : pal.main, 1, 0.8 * I))
+            const h = (20 + 9 * f) * (0.6 + 0.4 * (0.5 + 0.5 * nz)) * I * (en.charged ? 1.3 : 1)
+            c.flames.quad(j.add(up.uniformScale(h * 0.4)).add(side.uniformScale((f - 0.5) * 6 + nz * 1.5)), side, up, h * 0.3, h * 0.5, tint(f === 0 ? pal.core : pal.main, 1, 0.82 * I))
           }
           break
         }
         case PowerId.Ice: {
-          for (let f = 0; f < 2; f++) {
+          const shards = i % 2 === 0 ? 2 : 1
+          for (let f = 0; f < shards; f++) {
             const a = hash1(i * 5.1 + f * 3.3 + en.seed) * Math.PI
             const dir = cam.right.uniformScale(Math.cos(a) * 0.7).add(up.uniformScale(0.5 + 0.4 * Math.abs(Math.sin(a)))).normalize()
-            const len = (8 + 5 * Math.abs(hash1(i * 2.3 + f))) * smoothstep(0, 1.2, en.age) * I
+            const len = (11 + 7 * Math.abs(hash1(i * 2.3 + f))) * smoothstep(0, 1.2, en.age) * I
             c.crystals.quad(j.add(dir.uniformScale(len * 0.5 + 3)), sideAxisFor(dir, cam), dir, len * 0.2, len * 0.5, tint(f === 0 ? pal.core : pal.main, 1, 0.85 * I))
           }
           break
         }
         case PowerId.Lightning: {
-          const other = joints[(i + 1 + (Math.floor(t * 6 + i) % Math.max(1, n - 1))) % n]
-          if (flickerNoise(i + 9, en.seed, t, 9) > -0.1) c.arc(j, other, 7, j.distance(other) * 0.18, en.seed + i * 3.1, t, 2.4 * I, 0.55 * I, tint(pal.main, 1, 0.7 * I), tint(pal.core, 1, 0.95 * I), cam.pos)
+          // sparks spit off every point; the arcs themselves run along the limbs (above)
+          const fl = 0.5 + 0.5 * flickerNoise(i + 40, en.seed, t, 12)
+          c.sparks.quadRotated(j, cam.right, cam.up, 1.2 * fl * I, 3.2 * fl * I, tint(pal.core, 1, 0.85 * fl * I), t * 3 + i)
           break
         }
         default: {
-          // energy / gravity: stars orbit each joint
-          for (let f = 0; f < 3; f++) {
-            const a = t * (en.element === PowerId.EnergySphere ? 2.4 : 1.1) + f * 2.094 + i
-            const p = j.add(cam.right.uniformScale(Math.cos(a) * 8)).add(up.uniformScale(Math.sin(a) * 8))
+          // energy / gravity: stars orbit each point
+          for (let f = 0; f < 2; f++) {
+            const a = t * (en.element === PowerId.EnergySphere ? 2.4 : 1.1) + f * Math.PI + i
+            const p = j.add(cam.right.uniformScale(Math.cos(a) * 7)).add(up.uniformScale(Math.sin(a) * 7))
             c.stars.quadRotated(p, cam.right, cam.up, 1.3 * I, 1.3 * I, tint(f === 0 ? pal.core : pal.accent, 1, 0.85 * I), a)
           }
           break
@@ -961,10 +997,10 @@ export class WorldMagic implements WorldMagicApi {
         c.rings.quad(at, cam.right, cam.look, 26 * a, 26 * a, tint(pal.accent, 1, 0.6 * a * I))
       }
     }
-    en.emit += 26 * I * dt
+    en.emit += 30 * I * dt
     while (en.emit >= 1) {
       en.emit -= 1
-      const j = joints[Math.floor(Math.random() * n) % n].add(randomUnitVector().uniformScale(7))
+      const j = points[Math.floor(Math.random() * n) % n].add(randomUnitVector().uniformScale(6))
       if (en.element === PowerId.Fireball) c.motePool.spawn({ pos: j, vel: up.uniformScale(randRange(25, 55)).add(randomUnitVector().uniformScale(8)), life: randRange(0.7, 1.4), size: randRange(0.9, 2), sizeEnd: 0.15, color: Math.random() < 0.25 ? pal.core : pal.accent, drag: 0.6, gravity: -14, turbulence: 35 })
       else if (en.element === PowerId.Ice) c.motePool.spawn({ pos: j, vel: up.uniformScale(-randRange(4, 14)), life: randRange(1, 2), size: randRange(0.8, 1.6), sizeEnd: 0.1, color: pal.core, drag: 0.5, turbulence: 14 })
       else if (en.element === PowerId.Lightning) c.sparkPool.spawn({ pos: j, vel: randomUnitVector().uniformScale(randRange(40, 120)), life: randRange(0.15, 0.3), size: randRange(1, 2.2), sizeEnd: 0.1, color: pal.core, drag: 3 })
