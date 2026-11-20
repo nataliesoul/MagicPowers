@@ -3375,7 +3375,6 @@
   Enabled: true
   ScriptAsset: !<reference> 9d161ab6-9861-4b9c-8fde-39e5d8639dec
   ScriptInputsDefault:
-    aimSizeScale: true
     editorMockBody: true
     alwaysShowBody: true
     logTracking: true
@@ -3383,7 +3382,7 @@
     {}
   ScriptInputs:
     "":
-      aimSizeScale: 1.150000
+      aimSizeScale: 1.350000
       editorMockBody: true
       alwaysShowBody: false
       logTracking: false
